@@ -7,19 +7,34 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		22F2A6F515FCE59CE57B7F77 /* Pods_Delicious.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 542B6724C4CDEBE5C89F98EC /* Pods_Delicious.framework */; };
 		84212C611DE2E82C00CBE86E /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84212C601DE2E82C00CBE86E /* AppDelegate.swift */; };
 		84212C631DE2E82C00CBE86E /* LoginVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84212C621DE2E82C00CBE86E /* LoginVC.swift */; };
 		84212C681DE2E82C00CBE86E /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 84212C671DE2E82C00CBE86E /* Assets.xcassets */; };
 		84212C6B1DE2E82C00CBE86E /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 84212C691DE2E82C00CBE86E /* LaunchScreen.storyboard */; };
+		845F970E1DE34DDD005BE203 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 845F970D1DE34DDD005BE203 /* GoogleService-Info.plist */; };
+		845F97121DE3551F005BE203 /* DataService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 845F97111DE3551F005BE203 /* DataService.swift */; };
+		845F97151DE3554C005BE203 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 845F97141DE3554C005BE203 /* Constants.swift */; };
+		845F97171DE357E3005BE203 /* LoginService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 845F97161DE357E3005BE203 /* LoginService.swift */; };
+		845F97191DE360D2005BE203 /* MainVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 845F97181DE360D2005BE203 /* MainVC.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		325B3BA5273854D1F19DFAA6 /* Pods-Delicious.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Delicious.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Delicious/Pods-Delicious.debug.xcconfig"; sourceTree = "<group>"; };
+		542B6724C4CDEBE5C89F98EC /* Pods_Delicious.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Delicious.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		84212C5D1DE2E82C00CBE86E /* Delicious.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Delicious.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		84212C601DE2E82C00CBE86E /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		84212C621DE2E82C00CBE86E /* LoginVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginVC.swift; sourceTree = "<group>"; };
 		84212C671DE2E82C00CBE86E /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		84212C6A1DE2E82C00CBE86E /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		84212C6C1DE2E82C00CBE86E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		845F970D1DE34DDD005BE203 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		845F970F1DE35305005BE203 /* Delicious.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Delicious.entitlements; sourceTree = "<group>"; };
+		845F97111DE3551F005BE203 /* DataService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DataService.swift; sourceTree = "<group>"; };
+		845F97141DE3554C005BE203 /* Constants.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
+		845F97161DE357E3005BE203 /* LoginService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LoginService.swift; sourceTree = "<group>"; };
+		845F97181DE360D2005BE203 /* MainVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MainVC.swift; sourceTree = "<group>"; };
+		E399843CC773F4956B650DDF /* Pods-Delicious.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Delicious.release.xcconfig"; path = "Pods/Target Support Files/Pods-Delicious/Pods-Delicious.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -27,17 +42,37 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				22F2A6F515FCE59CE57B7F77 /* Pods_Delicious.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		0B8D171ABC2850CDCC7E0BA0 /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				325B3BA5273854D1F19DFAA6 /* Pods-Delicious.debug.xcconfig */,
+				E399843CC773F4956B650DDF /* Pods-Delicious.release.xcconfig */,
+			);
+			name = Pods;
+			sourceTree = "<group>";
+		};
+		5A6463CAFE48CE157E24B863 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				542B6724C4CDEBE5C89F98EC /* Pods_Delicious.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		84212C541DE2E82C00CBE86E = {
 			isa = PBXGroup;
 			children = (
 				84212C5F1DE2E82C00CBE86E /* Delicious */,
 				84212C5E1DE2E82C00CBE86E /* Products */,
+				0B8D171ABC2850CDCC7E0BA0 /* Pods */,
+				5A6463CAFE48CE157E24B863 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -52,20 +87,42 @@
 		84212C5F1DE2E82C00CBE86E /* Delicious */ = {
 			isa = PBXGroup;
 			children = (
+				845F97131DE35542005BE203 /* Utils */,
+				845F97101DE3550D005BE203 /* Helpers */,
+				845F970F1DE35305005BE203 /* Delicious.entitlements */,
 				84B6811C1DE2E9F2009D1B22 /* View */,
 				84B6811B1DE2E9EC009D1B22 /* Controllers */,
 				84212C601DE2E82C00CBE86E /* AppDelegate.swift */,
 				84212C671DE2E82C00CBE86E /* Assets.xcassets */,
 				84212C691DE2E82C00CBE86E /* LaunchScreen.storyboard */,
+				845F970D1DE34DDD005BE203 /* GoogleService-Info.plist */,
 				84212C6C1DE2E82C00CBE86E /* Info.plist */,
 			);
 			path = Delicious;
+			sourceTree = "<group>";
+		};
+		845F97101DE3550D005BE203 /* Helpers */ = {
+			isa = PBXGroup;
+			children = (
+				845F97111DE3551F005BE203 /* DataService.swift */,
+				845F97161DE357E3005BE203 /* LoginService.swift */,
+			);
+			name = Helpers;
+			sourceTree = "<group>";
+		};
+		845F97131DE35542005BE203 /* Utils */ = {
+			isa = PBXGroup;
+			children = (
+				845F97141DE3554C005BE203 /* Constants.swift */,
+			);
+			name = Utils;
 			sourceTree = "<group>";
 		};
 		84B6811B1DE2E9EC009D1B22 /* Controllers */ = {
 			isa = PBXGroup;
 			children = (
 				84212C621DE2E82C00CBE86E /* LoginVC.swift */,
+				845F97181DE360D2005BE203 /* MainVC.swift */,
 			);
 			name = Controllers;
 			sourceTree = "<group>";
@@ -84,9 +141,12 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 84212C6F1DE2E82C00CBE86E /* Build configuration list for PBXNativeTarget "Delicious" */;
 			buildPhases = (
+				881A22161E8EEACAF8D31A09 /* [CP] Check Pods Manifest.lock */,
 				84212C591DE2E82C00CBE86E /* Sources */,
 				84212C5A1DE2E82C00CBE86E /* Frameworks */,
 				84212C5B1DE2E82C00CBE86E /* Resources */,
+				351EA18500A301393EDA884B /* [CP] Embed Pods Frameworks */,
+				76BF49628C1C7D57E393FFE9 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -111,6 +171,11 @@
 						CreatedOnToolsVersion = 8.1;
 						DevelopmentTeam = X3563PB3YJ;
 						ProvisioningStyle = Automatic;
+						SystemCapabilities = {
+							com.apple.Keychain = {
+								enabled = 1;
+							};
+						};
 					};
 				};
 			};
@@ -139,18 +204,71 @@
 			files = (
 				84212C6B1DE2E82C00CBE86E /* LaunchScreen.storyboard in Resources */,
 				84212C681DE2E82C00CBE86E /* Assets.xcassets in Resources */,
+				845F970E1DE34DDD005BE203 /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		351EA18500A301393EDA884B /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-Delicious/Pods-Delicious-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		76BF49628C1C7D57E393FFE9 /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Copy Pods Resources";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-Delicious/Pods-Delicious-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		881A22161E8EEACAF8D31A09 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		84212C591DE2E82C00CBE86E /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				845F97121DE3551F005BE203 /* DataService.swift in Sources */,
+				845F97191DE360D2005BE203 /* MainVC.swift in Sources */,
 				84212C631DE2E82C00CBE86E /* LoginVC.swift in Sources */,
+				845F97171DE357E3005BE203 /* LoginService.swift in Sources */,
 				84212C611DE2E82C00CBE86E /* AppDelegate.swift in Sources */,
+				845F97151DE3554C005BE203 /* Constants.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -261,8 +379,10 @@
 		};
 		84212C701DE2E82C00CBE86E /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 325B3BA5273854D1F19DFAA6 /* Pods-Delicious.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = Delicious/Delicious.entitlements;
 				DEVELOPMENT_TEAM = X3563PB3YJ;
 				INFOPLIST_FILE = Delicious/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -274,8 +394,10 @@
 		};
 		84212C711DE2E82C00CBE86E /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = E399843CC773F4956B650DDF /* Pods-Delicious.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = Delicious/Delicious.entitlements;
 				DEVELOPMENT_TEAM = X3563PB3YJ;
 				INFOPLIST_FILE = Delicious/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";

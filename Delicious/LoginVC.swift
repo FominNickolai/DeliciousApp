@@ -7,6 +7,9 @@
 //
 
 import UIKit
+import FBSDKLoginKit
+import Firebase
+import SwiftKeychainWrapper
 
 class LoginVC: UIViewController {
     
@@ -68,7 +71,7 @@ class LoginVC: UIViewController {
         return tf
     }()
     
-    let signInWithEmailButton: UIButton = {
+    lazy var signInWithEmailButton: UIButton = {
         let button = UIButton(type: .system)
         button.setTitle("Sign In", for: .normal)
         button.setTitleColor(.white, for: .normal)
@@ -77,10 +80,11 @@ class LoginVC: UIViewController {
         button.layer.cornerRadius = 27
         button.layer.masksToBounds = true
         button.backgroundColor = UIColor(red:1,  green:0.404,  blue:0.384, alpha:1)
+        button.addTarget(self, action: #selector(handleSignInWithEmail), for: .touchUpInside)
         return button
     }()
     
-    let signInWithFacebookButton: UIButton = {
+    lazy var signInWithFacebookButton: UIButton = {
         let button = UIButton(type: .system)
         button.setTitle("Sign In with Facebook", for: .normal)
         button.setTitleColor(.white, for: .normal)
@@ -89,6 +93,7 @@ class LoginVC: UIViewController {
         button.layer.cornerRadius = 27
         button.layer.masksToBounds = true
         button.backgroundColor = UIColor(red:0.294,  green:0.431,  blue:0.659, alpha:1)
+        button.addTarget(self, action: #selector(handleSignInWithFacebook), for: .touchUpInside)
         return button
     }()
 
@@ -109,40 +114,99 @@ class LoginVC: UIViewController {
         containerView.heightAnchor.constraint(equalTo: view.heightAnchor, constant: -200).isActive = true
         
         //Stack View
+        let mainStackView = UIStackView()
+        mainStackView.axis = .vertical
+        mainStackView.distribution = .equalSpacing
+        mainStackView.alignment = .center
+        mainStackView.spacing = 55
+        mainStackView.translatesAutoresizingMaskIntoConstraints = false
+        
         let stackView = UIStackView()
         stackView.axis = .vertical
         stackView.distribution = .equalSpacing
         stackView.alignment = .center
         stackView.spacing = 22
+        stackView.translatesAutoresizingMaskIntoConstraints = false
         
-        stackView.addArrangedSubview(titleLabel)
+        containerView.addSubview(mainStackView)
+        
         stackView.addArrangedSubview(emailTextField)
         stackView.addArrangedSubview(passwordTextField)
         stackView.addArrangedSubview(signInWithEmailButton)
         stackView.addArrangedSubview(signInWithFacebookButton)
-        stackView.translatesAutoresizingMaskIntoConstraints = false
         
-        containerView.addSubview(stackView)
-        stackView.centerXAnchor.constraint(equalTo: containerView.centerXAnchor).isActive = true
-        stackView.centerYAnchor.constraint(equalTo: containerView.centerYAnchor).isActive = true
-        stackView.leftAnchor.constraint(equalTo: containerView.leftAnchor).isActive = true
-        stackView.rightAnchor.constraint(equalTo: containerView.rightAnchor).isActive = true
-        titleLabel.widthAnchor.constraint(equalTo: stackView.widthAnchor).isActive = true
+        mainStackView.addArrangedSubview(titleLabel)
+        mainStackView.addArrangedSubview(stackView)
+        
+        mainStackView.centerXAnchor.constraint(equalTo: containerView.centerXAnchor).isActive = true
+        mainStackView.centerYAnchor.constraint(equalTo: containerView.centerYAnchor).isActive = true
+        mainStackView.leftAnchor.constraint(equalTo: containerView.leftAnchor).isActive = true
+        mainStackView.rightAnchor.constraint(equalTo: containerView.rightAnchor).isActive = true
+        
+        stackView.leftAnchor.constraint(equalTo: mainStackView.leftAnchor).isActive = true
+        stackView.rightAnchor.constraint(equalTo: mainStackView.rightAnchor).isActive = true
+        
+        titleLabel.widthAnchor.constraint(equalTo: mainStackView.widthAnchor).isActive = true
         emailTextField.widthAnchor.constraint(equalTo: stackView.widthAnchor).isActive = true
         passwordTextField.widthAnchor.constraint(equalTo: stackView.widthAnchor).isActive = true
         signInWithEmailButton.widthAnchor.constraint(equalTo: stackView.widthAnchor).isActive = true
-        signInWithFacebookButton.widthAnchor.constraint(equalTo: stackView.widthAnchor).isActive = true
+        signInWithFacebookButton.widthAnchor.constraint(equalTo: stackView.widthAnchor).isActive = true   
         
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
         
+        if let key = KeychainWrapper.standard.string(forKey: KEY_UID) {
+            print(key)
+            print("Already Log IN")
+            presentMainVC()
+            
+        }
         
-        
+    }
+    fileprivate func presentMainVC() {
+        let layout = UICollectionViewFlowLayout()
+        let controller = MainVC(collectionViewLayout: layout)
+        let navController = UINavigationController(rootViewController: controller)
+        navController.viewControllers = [controller]
+        present(navController, animated: true, completion: {
+            //
+        })
     }
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
-
-
+    
+    deinit {
+        print("LoginVC deinit")
+    }
+}
+//Actions
+extension LoginVC {
+    func handleSignInWithEmail() {
+        guard let email = emailTextField.text else {
+            return
+        }
+        guard  let password = passwordTextField.text else {
+            return
+        }
+        LoginService.standard.loginWithEmailAndPassword(email: email, password: password, completion: {
+            DispatchQueue.main.async {
+                self.presentMainVC()
+            }
+        })
+    }
+    
+    func handleSignInWithFacebook() {
+        LoginService.standard.loginWithFacebook(vc: self, completion: {
+            DispatchQueue.main.async {
+                 self.presentMainVC()
+            }
+        })
+    }
+    
 }
 
