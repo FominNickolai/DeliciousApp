@@ -23,6 +23,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         window?.rootViewController = LoginVC()
         
         UINavigationBar.appearance().barTintColor = UIColor(red:0.996,  green:0.306,  blue:0.314, alpha:1)
+        UINavigationBar.appearance().tintColor = .white
+        UIApplication.shared.statusBarStyle = .lightContent
         UINavigationBar.appearance().titleTextAttributes = [NSForegroundColorAttributeName: UIColor.white, NSFontAttributeName: UIFont(name: "SnellRoundhand-Bold", size: 37.0)!]
         
         FIRApp.configure()

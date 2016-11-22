@@ -20,7 +20,6 @@ class DetailImageCell: DetailBaseCell {
         return imageView
     }()
     
-    
     override func setupViews() {
         super.setupViews()
         
@@ -28,6 +27,7 @@ class DetailImageCell: DetailBaseCell {
         
         imageView.widthAnchor.constraint(equalTo: widthAnchor).isActive = true
         imageView.heightAnchor.constraint(equalTo: heightAnchor).isActive = true
+
         
     }
     

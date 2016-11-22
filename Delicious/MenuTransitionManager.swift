@@ -80,12 +80,9 @@ extension MenuTransitionManager: UIViewControllerAnimatedTransitioning {
         UIView.animate(withDuration: duration, delay: 0.0, usingSpringWithDamping: 2.2, initialSpringVelocity: 2.2, options: [], animations: {
             
             if self.isPresenting {
-                
                 self.snapshot?.transform = concat
                 toView.transform = CGAffineTransform.identity
-                
             } else {
-                
                 self.snapshot?.transform = CGAffineTransform.identity
                 fromView.transform = moveLeft
                 

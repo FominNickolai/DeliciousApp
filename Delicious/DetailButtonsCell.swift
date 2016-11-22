@@ -12,7 +12,9 @@ class DetailButtonsCell: DetailBaseCell {
     
     let clockImage: UIImageView = {
         let image = UIImageView()
-        image.image = UIImage(named: "Clock")
+        let baseImage = UIImage(named: "Clock")
+        let changeColor = UIColor(red:1,  green:0.404,  blue:0.384, alpha:1)
+        image.image = baseImage?.maskWithColor(color: changeColor)
         image.contentMode = .scaleAspectFit
         image.translatesAutoresizingMaskIntoConstraints = false
         return image
@@ -44,28 +46,21 @@ class DetailButtonsCell: DetailBaseCell {
         return label
     }()
     
-    let instructionsButton: UIButton = {
-        let button = UIButton(type: .custom)
-        button.setTitle("Instructions", for: .normal)
-        button.titleLabel?.textColor = .white
-        button.backgroundColor = UIColor(red:1,  green:0.404,  blue:0.384, alpha:1)
-        button.translatesAutoresizingMaskIntoConstraints = false
-        button.titleLabel?.font = UIFont(name: "HelveticaNeue-Light", size: 18)
-        button.layer.cornerRadius = 8
-        button.layer.masksToBounds = true
-        return button
-    }()
-    
-    let ingridientsButton: UIButton = {
-        let button = UIButton(type: .custom)
-        button.setTitle("Ingridients", for: .normal)
-        button.titleLabel?.textColor = .white
-        button.backgroundColor = UIColor(red:0.604,  green:0.545,  blue:0.541, alpha:1)
-        button.translatesAutoresizingMaskIntoConstraints = false
-        button.titleLabel?.font = UIFont(name: "HelveticaNeue-Light", size: 18)
-        button.layer.cornerRadius = 8
-        button.layer.masksToBounds = true
-        return button
+    let cellTitle: UILabel = {
+        let label = UILabel()
+        let shadow = NSShadow()
+        shadow.shadowOffset = CGSize(width: 1, height: 1)
+        shadow.shadowColor = UIColor.black
+        let attributes = [
+            NSShadowAttributeName : shadow,
+            NSForegroundColorAttributeName : UIColor.white,
+            NSFontAttributeName: UIFont(name: "HelveticaNeue", size: 20)
+        ]
+        label.attributedText = NSAttributedString(string: "Grilled Steak with vinegar sauce", attributes: attributes)
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.backgroundColor = UIColor(red:1,  green:0.404,  blue:0.384, alpha:1)
+        label.textAlignment = .center
+        return label
     }()
     
     let isFavoriteButton: UIButton = {
@@ -87,15 +82,18 @@ class DetailButtonsCell: DetailBaseCell {
         
         backgroundView = blurEffectView
         
+        addSubview(cellTitle)
         addSubview(clockImage)
         addSubview(timeToCook)
         addSubview(forkImage)
         addSubview(personCount)
         addSubview(isFavoriteButton)
         
+        cellTitle.widthAnchor.constraint(equalTo: widthAnchor).isActive = true
+        cellTitle.heightAnchor.constraint(equalToConstant: 48).isActive = true
         
         clockImage.leftAnchor.constraint(equalTo: leftAnchor, constant: 15).isActive = true
-        clockImage.topAnchor.constraint(equalTo: topAnchor, constant: 15).isActive = true
+        clockImage.topAnchor.constraint(equalTo: cellTitle.bottomAnchor, constant: 15).isActive = true
         clockImage.widthAnchor.constraint(equalToConstant: 22).isActive = true
         clockImage.heightAnchor.constraint(equalToConstant: 22).isActive = true
         
@@ -111,22 +109,22 @@ class DetailButtonsCell: DetailBaseCell {
         isFavoriteButton.rightAnchor.constraint(equalTo: rightAnchor, constant: -15).isActive = true
         isFavoriteButton.centerYAnchor.constraint(equalTo: personCount.centerYAnchor).isActive = true
         
-        let stackView = UIStackView()
-        stackView.axis = .horizontal
-        stackView.distribution = .fillEqually
-        stackView.alignment = .fill
-        stackView.spacing = 10
-        stackView.translatesAutoresizingMaskIntoConstraints = false
-        
-        addSubview(stackView)
-        stackView.addArrangedSubview(instructionsButton)
-        stackView.addArrangedSubview(ingridientsButton)
-        
-        stackView.leftAnchor.constraint(equalTo: leftAnchor, constant: 15).isActive = true
-        stackView.rightAnchor.constraint(equalTo: rightAnchor, constant: -15).isActive = true
-        stackView.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -10).isActive = true
-        instructionsButton.heightAnchor.constraint(equalToConstant: 48).isActive = true
-        ingridientsButton.heightAnchor.constraint(equalToConstant: 48).isActive = true
+//        let stackView = UIStackView()
+//        stackView.axis = .horizontal
+//        stackView.distribution = .fillEqually
+//        stackView.alignment = .fill
+//        stackView.spacing = 10
+//        stackView.translatesAutoresizingMaskIntoConstraints = false
+//        
+//        addSubview(stackView)
+//        stackView.addArrangedSubview(instructionsButton)
+//        stackView.addArrangedSubview(ingridientsButton)
+//        
+//        stackView.leftAnchor.constraint(equalTo: leftAnchor, constant: 15).isActive = true
+//        stackView.rightAnchor.constraint(equalTo: rightAnchor, constant: -15).isActive = true
+//        stackView.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -10).isActive = true
+//        instructionsButton.heightAnchor.constraint(equalToConstant: 48).isActive = true
+//        ingridientsButton.heightAnchor.constraint(equalToConstant: 48).isActive = true
 
         
     }

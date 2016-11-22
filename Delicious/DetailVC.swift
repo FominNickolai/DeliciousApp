@@ -10,6 +10,8 @@ import UIKit
 
 class DetailVC: UIViewController {
     
+    let text = ["", "", "Lorem ipsum – псевдо-латинский текст, который используется для веб дизайна, типографии, оборудования, и распечатки вместо английского текста для того, чтобы сделать ударение не на содержание, а на элементы дизайна. Такой текст также называется как заполнитель. Это очень удобный инструмент для моделей (макетов). Он помогает выделить визуальные элементы в документе или презентации, например текст, шрифт или разметка. Lorem ipsum по большей части является элементом латинского текста классического автора и философа Цицерона.", "В профессиональной сфере часто случается так, что личные или корпоративные клиенты заказывают, чтобы публикация была сделана и представлена еще тогда, когда фактическое содержание все еще не готово. Вспомните новостные блоги, где информация публикуется каждый час в живом порядке. Тем не менее, читатели склонны к тому, чтобы быть отвлеченными доступным контентом, скажем, любым текстом, который был скопирован из газеты или интернета. Они предпочитают сконцентрироваться на тексте, пренебрегая разметкой и ее элементами. К тому же, случайный текст подвергается риску быть неумышленно смешным или оскорбительным, что является неприемлемым риском в корпоративной среде. Lorem ipsum, а также ее многие варианты были использованы в работе начиная с 1960-ых, и очень даже похоже, что еще с 16-го века."]
+    
     lazy var collectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
 //        layout.headerReferenceSize = CGSize(width: self.view.frame.width, height: 200)
@@ -43,10 +45,8 @@ class DetailVC: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        
         view.addSubview(imageView)
         view.addSubview(blurView)
-        
         
         view.addSubview(collectionView)
         
@@ -66,6 +66,15 @@ class DetailVC: UIViewController {
         collectionView.register(DetailTextCell.self, forCellWithReuseIdentifier: cellTextId)
     }
     
+    fileprivate func estimateFrameForText(text: String) -> CGRect {
+        
+        let size = CGSize(width: UIScreen.main.bounds.width - 50, height: 1000)
+        let options = NSStringDrawingOptions.usesFontLeading.union(.usesLineFragmentOrigin)
+                
+        return NSString(string: text).boundingRect(with: size, options: options, attributes: [NSFontAttributeName: UIFont.systemFont(ofSize: 16)], context: nil)
+        
+    }
+    
     deinit {
         print("DetailVC Deinit")
     }
@@ -75,7 +84,7 @@ class DetailVC: UIViewController {
 //UICollectionViewDataSource
 extension DetailVC: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return 3
+        return 4
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
@@ -88,6 +97,8 @@ extension DetailVC: UICollectionViewDataSource {
             return cell
         } else {
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: cellTextId, for: indexPath) as! DetailTextCell
+            cell.textCell = text[indexPath.item]
+
             return cell
         }
     
@@ -108,17 +119,17 @@ extension DetailVC: UICollectionViewDelegate {
 extension DetailVC: UICollectionViewDelegateFlowLayout {
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        
+    
         var height: CGFloat = 0
         if indexPath.item == 0 {
             height = 244
         } else if indexPath.item == 1 {
-            height =  130
+            height =  103
         } else {
-            //height = UICollectionViewFlowLayoutAutomaticSize.height
-            height = 300
+            let messageText = text[indexPath.item]
+            height = estimateFrameForText(text: messageText).height + 100
         }
-    
+        print(height)
         return CGSize(width: view.frame.width - 20, height: height)
         
     }

@@ -10,15 +10,32 @@ import UIKit
 
 class DetailTextCell: DetailBaseCell {
     
-    let messageTextView: UITextView = {
+    var textCell: String? {
+        didSet {
+            textView.text = textCell
+        }
+    }
+    
+    let textView: UITextView = {
         let tv = UITextView()
-        tv.font = UIFont(name: "HelveticaNeue-Light", size: 16)
+        tv.font = UIFont.systemFont(ofSize: 16)
         tv.text = "1. Blend the ingredients for pesto in a processor and keep aside."
         tv.backgroundColor = .clear
         tv.textColor = .white
         tv.translatesAutoresizingMaskIntoConstraints = false
         tv.isEditable = false
         return tv
+    }()
+    
+    let titleCellTopView: UILabel = {
+        let label = UILabel()
+        label.text = "Ingridients"
+        label.textColor = .white
+        label.font = UIFont(name: "HelveticaNeue-Light", size: 18)
+        label.backgroundColor = UIColor(red:1,  green:0.404,  blue:0.384, alpha:1)
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.textAlignment = .center
+        return label
     }()
     
     override func setupViews() {
@@ -33,12 +50,18 @@ class DetailTextCell: DetailBaseCell {
         
         backgroundView = blurEffectView
         
-        addSubview(messageTextView)
+        addSubview(titleCellTopView)
+        addSubview(textView)
         
-        messageTextView.leftAnchor.constraint(equalTo: leftAnchor, constant: 15).isActive = true
-        messageTextView.rightAnchor.constraint(equalTo: rightAnchor, constant: -15).isActive = true
-        messageTextView.topAnchor.constraint(equalTo: topAnchor, constant: 15).isActive = true
-        messageTextView.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -15).isActive = true
+        titleCellTopView.topAnchor.constraint(equalTo: topAnchor).isActive = true
+        titleCellTopView.leftAnchor.constraint(equalTo: leftAnchor).isActive = true
+        titleCellTopView.rightAnchor.constraint(equalTo: rightAnchor).isActive = true
+        titleCellTopView.heightAnchor.constraint(equalToConstant: 48).isActive = true
+        
+        textView.leftAnchor.constraint(equalTo: leftAnchor, constant: 15).isActive = true
+        textView.rightAnchor.constraint(equalTo: rightAnchor, constant: -15).isActive = true
+        textView.topAnchor.constraint(equalTo: titleCellTopView.bottomAnchor, constant: 15).isActive = true
+        textView.heightAnchor.constraint(equalTo: heightAnchor, constant: -48).isActive = true
     }
     
 }

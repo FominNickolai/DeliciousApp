@@ -8,7 +8,15 @@
 
 import UIKit
 
-class MenuVC: UITableViewController {
+class MenuVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
+    
+    lazy var tableView: UITableView = {
+        let table = UITableView()
+        table.delegate = self
+        table.dataSource = self
+        table.translatesAutoresizingMaskIntoConstraints = false
+        return table
+    }()
     
     let cellId = "cellId"
     
@@ -17,16 +25,22 @@ class MenuVC: UITableViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        view.addSubview(tableView)
+        tableView.topAnchor.constraint(equalTo: view.topAnchor).isActive = true
+        tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
+        tableView.leftAnchor.constraint(equalTo: view.leftAnchor).isActive = true
+        tableView.rightAnchor.constraint(equalTo: view.rightAnchor).isActive = true
+        
         let backgroundImage = #imageLiteral(resourceName: "Background")
         let imageView = UIImageView(image: backgroundImage)
-        
-        tableView.register(MenuCell.self, forCellReuseIdentifier: cellId)
         
         tableView.backgroundView = imageView
         tableView.estimatedRowHeight = 45
         tableView.contentInset = UIEdgeInsetsMake(50, 0, 0, 0)
         tableView.separatorStyle = .none
         
+        tableView.register(MenuCell.self, forCellReuseIdentifier: cellId)
+
     }
     
     deinit {
@@ -35,17 +49,17 @@ class MenuVC: UITableViewController {
     
     // MARK: - Table view data source
     
-    override func numberOfSections(in tableView: UITableView) -> Int {
+    func numberOfSections(in tableView: UITableView) -> Int {
         // #warning Incomplete implementation, return the number of sections
         return 1
     }
     
-    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         // #warning Incomplete implementation, return the number of rows
         return menuItems.count
     }
     
-    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: cellId, for: indexPath) as! MenuCell
         
         // Configure the cell...

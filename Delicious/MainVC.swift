@@ -10,7 +10,33 @@ import UIKit
 import SwiftKeychainWrapper
 import BetterSegmentedControl
 
-class MainVC: UICollectionViewController {
+class MainVC: UIViewController {
+    
+    lazy var collectionView: UICollectionView = {
+        let layout = UICollectionViewFlowLayout()
+        layout.headerReferenceSize = CGSize(width: self.view.frame.width, height: 70)
+        let collectionView = UICollectionView(frame: self.view.frame, collectionViewLayout: layout)
+        collectionView.translatesAutoresizingMaskIntoConstraints = false
+        collectionView.delegate = self
+        collectionView.dataSource = self
+        return collectionView
+    }()
+    
+    let blurView: UIVisualEffectView = {
+        let blurEffect = UIBlurEffect(style: .dark)
+        let blurEffectView = UIVisualEffectView(effect: blurEffect)
+        blurEffectView.translatesAutoresizingMaskIntoConstraints = false
+        return blurEffectView
+    }()
+    
+    let imageView: UIImageView = {
+        let imageView = UIImageView()
+        imageView.image = UIImage(named: "food-3")
+        imageView.contentMode = .scaleAspectFill
+        imageView.layer.masksToBounds = true
+        imageView.translatesAutoresizingMaskIntoConstraints = false
+        return imageView
+    }()
     
     lazy var menuNavBarButton: UIBarButtonItem = {
         let button = UIBarButtonItem(image: UIImage(named: "MenuIcon"), style: .plain, target: self, action: #selector(handleMenuButtonPressed))
@@ -42,18 +68,39 @@ class MainVC: UICollectionViewController {
     
     let cellId = "cellId"
     
+    
+
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        navigationItem.title = "Delicious"
-        navigationItem.leftBarButtonItem = menuNavBarButton
-        navigationItem.rightBarButtonItem = logOutBarButton
-        collectionView?.register(MainCell.self, forCellWithReuseIdentifier: cellId)
-        collectionView?.backgroundColor = .red
+        view.addSubview(imageView)
+        view.addSubview(blurView)
+        view.addSubview(collectionView)
+        
+        imageView.widthAnchor.constraint(equalTo: view.widthAnchor).isActive = true
+        imageView.heightAnchor.constraint(equalTo: view.heightAnchor).isActive = true
+        blurView.widthAnchor.constraint(equalTo: view.widthAnchor).isActive = true
+        blurView.heightAnchor.constraint(equalTo: view.heightAnchor).isActive = true
+        
         view.addSubview(segmentedControl)
         segmentedControl.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 8).isActive = true
         segmentedControl.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -8).isActive = true
-        segmentedControl.topAnchor.constraint(equalTo: view.topAnchor, constant: 8).isActive = true
+        segmentedControl.topAnchor.constraint(equalTo: view.topAnchor, constant: 74).isActive = true
         segmentedControl.heightAnchor.constraint(equalToConstant: 50).isActive = true
+        
+        collectionView.leftAnchor.constraint(equalTo: view.leftAnchor).isActive = true
+        collectionView.rightAnchor.constraint(equalTo: view.rightAnchor).isActive = true
+        collectionView.topAnchor.constraint(equalTo: view.topAnchor, constant: 64).isActive = true
+        collectionView.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
+        
+        navigationItem.title = "Delicious"
+        navigationItem.leftBarButtonItem = menuNavBarButton
+        navigationItem.rightBarButtonItem = logOutBarButton
+        
+        collectionView.register(MainCell.self, forCellWithReuseIdentifier: cellId)
+        collectionView.backgroundColor = .clear
+        
+        
     }
     
     deinit {
@@ -87,12 +134,12 @@ extension MainVC: MenuTransitionManagerDelegate {
     
 }
 //UICollectionViewDataSource
-extension MainVC {
-    override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+extension MainVC: UICollectionViewDataSource {
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return 3
     }
     
-    override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: cellId, for: indexPath) as! MainCell
         return cell
@@ -101,9 +148,12 @@ extension MainVC {
 }
 
 //UICollectionViewDelegate
-extension MainVC {
+extension MainVC: UICollectionViewDelegate {
     
-    override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        let backItem = UIBarButtonItem()
+        backItem.title = "Back"
+        navigationItem.backBarButtonItem = backItem
         let controller = DetailVC()
         navigationController?.pushViewController(controller, animated: true)
         
@@ -122,7 +172,7 @@ extension MainVC: UICollectionViewDelegateFlowLayout {
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
         
-        return UIEdgeInsetsMake(8, 0, 0, 0)
+        return UIEdgeInsetsMake(0, 0, 0, 0)
         
     }
     

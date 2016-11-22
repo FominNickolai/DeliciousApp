@@ -96,6 +96,7 @@ class LoginVC: UIViewController {
         button.addTarget(self, action: #selector(handleSignInWithFacebook), for: .touchUpInside)
         return button
     }()
+    
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -166,8 +167,7 @@ class LoginVC: UIViewController {
         
     }
     fileprivate func presentMainVC() {
-        let layout = UICollectionViewFlowLayout()
-        let controller = MainVC(collectionViewLayout: layout)
+        let controller = MainVC()
         let navController = UINavigationController(rootViewController: controller)
         navController.viewControllers = [controller]
         present(navController, animated: true, completion: {
