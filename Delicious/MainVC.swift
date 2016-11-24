@@ -9,6 +9,7 @@
 import UIKit
 import SwiftKeychainWrapper
 import BetterSegmentedControl
+import Firebase
 
 class MainVC: UIViewController {
     
@@ -68,8 +69,20 @@ class MainVC: UIViewController {
     
     let cellId = "cellId"
     
+    var viewDidAppearProcessed = false
     
-
+    var recipes = [Recipe]()
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        
+        let key = KeychainWrapper.standard.string(forKey: KEY_UID)
+        if key == nil && viewDidAppearProcessed == true {
+            dismiss(animated: true, completion: nil)
+        }
+        
+        viewDidAppearProcessed = true
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -100,6 +113,38 @@ class MainVC: UIViewController {
         collectionView.register(MainCell.self, forCellWithReuseIdentifier: cellId)
         collectionView.backgroundColor = .clear
         
+        let swipeRight = UISwipeGestureRecognizer(target: self, action: #selector(handleMenuButtonPressed))
+        swipeRight.direction = UISwipeGestureRecognizerDirection.right
+        self.view.addGestureRecognizer(swipeRight)
+        
+        
+        DataService.ds.REF_POSTS.observe(.value, with: { (snapshot) in
+            
+            if let snapshot = snapshot.children.allObjects as? [FIRDataSnapshot] {
+                self.recipes.removeAll(keepingCapacity: true)
+                for snap in snapshot {
+                    
+                    print("SNAP: \(snap)")
+                    
+                    if let recipeDict = snap.value as? Dictionary<String, AnyObject> {
+                        
+                        let key = snap.key
+                        let recipe = Recipe(recipeKey: key, recipeData: recipeDict)
+                        
+                        self.recipes.append(recipe)
+                        
+                    }
+                    
+                }
+                
+            }
+            
+            DispatchQueue.main.async {
+                self.collectionView.reloadData()
+            }
+            
+        })
+        
         
     }
     
@@ -115,14 +160,24 @@ extension MainVC {
         let menuVC = MenuVC()
         
         menuVC.transitioningDelegate = menuTransitionManager
+        menuVC.mainVC = self
         menuTransitionManager.delegate = self
         present(menuVC, animated: true, completion: nil)
     }
     
     func handleLogOutButton() {
         print("Log Out Pressed")
-         _ = KeychainWrapper.standard.removeObject(forKey: KEY_UID)
         dismiss(animated: true, completion: nil)
+         _ = KeychainWrapper.standard.removeObject(forKey: KEY_UID)
+    }
+    
+    func showAddVC() {
+        dismiss(animated: true, completion: nil)
+        let backItem = UIBarButtonItem()
+        backItem.title = "Back"
+        navigationItem.backBarButtonItem = backItem
+        let addVC = AddVC()
+        navigationController?.pushViewController(addVC, animated: true)
     }
 }
 
@@ -136,12 +191,15 @@ extension MainVC: MenuTransitionManagerDelegate {
 //UICollectionViewDataSource
 extension MainVC: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return 3
+        return recipes.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         
+        let recipe = recipes[indexPath.item]
+        
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: cellId, for: indexPath) as! MainCell
+        cell.recipe = recipe
         return cell
         
     }
@@ -155,6 +213,7 @@ extension MainVC: UICollectionViewDelegate {
         backItem.title = "Back"
         navigationItem.backBarButtonItem = backItem
         let controller = DetailVC()
+        controller.recipe = recipes[indexPath.item]
         navigationController?.pushViewController(controller, animated: true)
         
     }
@@ -166,7 +225,7 @@ extension MainVC: UICollectionViewDelegateFlowLayout {
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         
-        return CGSize(width: view.frame.width, height: 244)
+        return CGSize(width: view.frame.width - 20, height: 244)
         
     }
     

@@ -8,6 +8,13 @@
 
 /* Begin PBXBuildFile section */
 		22F2A6F515FCE59CE57B7F77 /* Pods_Delicious.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 542B6724C4CDEBE5C89F98EC /* Pods_Delicious.framework */; };
+		8414DB691DE5EA2F00175DB6 /* AddVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8414DB681DE5EA2F00175DB6 /* AddVC.swift */; };
+		8414DB6C1DE5EF1F00175DB6 /* AddImageCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8414DB6B1DE5EF1F00175DB6 /* AddImageCell.swift */; };
+		8414DB6E1DE5F65700175DB6 /* AddTitleCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8414DB6D1DE5F65700175DB6 /* AddTitleCell.swift */; };
+		8414DB701DE5FD1B00175DB6 /* AddIngrideintsCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8414DB6F1DE5FD1B00175DB6 /* AddIngrideintsCell.swift */; };
+		8414DB721DE5FE1D00175DB6 /* KMPlaceholderTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8414DB711DE5FE1D00175DB6 /* KMPlaceholderTextView.swift */; };
+		8414DB751DE62DE300175DB6 /* Recipe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8414DB741DE62DE300175DB6 /* Recipe.swift */; };
+		8414DB771DE6EFC800175DB6 /* AddInstructionsCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8414DB761DE6EFC800175DB6 /* AddInstructionsCell.swift */; };
 		8419837C1DE4C56100BACD9E /* Extentions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8419837B1DE4C56100BACD9E /* Extentions.swift */; };
 		84212C611DE2E82C00CBE86E /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84212C601DE2E82C00CBE86E /* AppDelegate.swift */; };
 		84212C631DE2E82C00CBE86E /* LoginVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84212C621DE2E82C00CBE86E /* LoginVC.swift */; };
@@ -25,13 +32,20 @@
 		845F97231DE44E89005BE203 /* DetailVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 845F97221DE44E89005BE203 /* DetailVC.swift */; };
 		845F97251DE44F19005BE203 /* DetailBaseCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 845F97241DE44F19005BE203 /* DetailBaseCell.swift */; };
 		845F97271DE451C1005BE203 /* DetailImageCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 845F97261DE451C1005BE203 /* DetailImageCell.swift */; };
-		845F97291DE46849005BE203 /* DetailButtonsCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 845F97281DE46849005BE203 /* DetailButtonsCell.swift */; };
+		845F97291DE46849005BE203 /* DetailTitleCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 845F97281DE46849005BE203 /* DetailTitleCell.swift */; };
 		845F972B1DE47373005BE203 /* DetailTextCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 845F972A1DE47373005BE203 /* DetailTextCell.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		325B3BA5273854D1F19DFAA6 /* Pods-Delicious.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Delicious.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Delicious/Pods-Delicious.debug.xcconfig"; sourceTree = "<group>"; };
 		542B6724C4CDEBE5C89F98EC /* Pods_Delicious.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Delicious.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		8414DB681DE5EA2F00175DB6 /* AddVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AddVC.swift; sourceTree = "<group>"; };
+		8414DB6B1DE5EF1F00175DB6 /* AddImageCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AddImageCell.swift; sourceTree = "<group>"; };
+		8414DB6D1DE5F65700175DB6 /* AddTitleCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AddTitleCell.swift; sourceTree = "<group>"; };
+		8414DB6F1DE5FD1B00175DB6 /* AddIngrideintsCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AddIngrideintsCell.swift; sourceTree = "<group>"; };
+		8414DB711DE5FE1D00175DB6 /* KMPlaceholderTextView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KMPlaceholderTextView.swift; sourceTree = "<group>"; };
+		8414DB741DE62DE300175DB6 /* Recipe.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Recipe.swift; sourceTree = "<group>"; };
+		8414DB761DE6EFC800175DB6 /* AddInstructionsCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AddInstructionsCell.swift; sourceTree = "<group>"; };
 		8419837B1DE4C56100BACD9E /* Extentions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Extentions.swift; sourceTree = "<group>"; };
 		84212C5D1DE2E82C00CBE86E /* Delicious.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Delicious.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		84212C601DE2E82C00CBE86E /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -52,7 +66,7 @@
 		845F97221DE44E89005BE203 /* DetailVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DetailVC.swift; sourceTree = "<group>"; };
 		845F97241DE44F19005BE203 /* DetailBaseCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DetailBaseCell.swift; sourceTree = "<group>"; };
 		845F97261DE451C1005BE203 /* DetailImageCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DetailImageCell.swift; sourceTree = "<group>"; };
-		845F97281DE46849005BE203 /* DetailButtonsCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DetailButtonsCell.swift; sourceTree = "<group>"; };
+		845F97281DE46849005BE203 /* DetailTitleCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DetailTitleCell.swift; sourceTree = "<group>"; };
 		845F972A1DE47373005BE203 /* DetailTextCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DetailTextCell.swift; sourceTree = "<group>"; };
 		E399843CC773F4956B650DDF /* Pods-Delicious.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Delicious.release.xcconfig"; path = "Pods/Target Support Files/Pods-Delicious/Pods-Delicious.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -86,6 +100,25 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
+		8414DB6A1DE5EF0400175DB6 /* AddNewCells */ = {
+			isa = PBXGroup;
+			children = (
+				8414DB6B1DE5EF1F00175DB6 /* AddImageCell.swift */,
+				8414DB6D1DE5F65700175DB6 /* AddTitleCell.swift */,
+				8414DB6F1DE5FD1B00175DB6 /* AddIngrideintsCell.swift */,
+				8414DB761DE6EFC800175DB6 /* AddInstructionsCell.swift */,
+			);
+			name = AddNewCells;
+			sourceTree = "<group>";
+		};
+		8414DB731DE62DD700175DB6 /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				8414DB741DE62DE300175DB6 /* Recipe.swift */,
+			);
+			name = Model;
+			sourceTree = "<group>";
+		};
 		84212C541DE2E82C00CBE86E = {
 			isa = PBXGroup;
 			children = (
@@ -107,6 +140,7 @@
 		84212C5F1DE2E82C00CBE86E /* Delicious */ = {
 			isa = PBXGroup;
 			children = (
+				8414DB731DE62DD700175DB6 /* Model */,
 				845F97131DE35542005BE203 /* Utils */,
 				845F97101DE3550D005BE203 /* Helpers */,
 				845F970F1DE35305005BE203 /* Delicious.entitlements */,
@@ -128,6 +162,7 @@
 				845F97161DE357E3005BE203 /* LoginService.swift */,
 				845F971E1DE36D86005BE203 /* MenuTransitionManager.swift */,
 				8419837B1DE4C56100BACD9E /* Extentions.swift */,
+				8414DB711DE5FE1D00175DB6 /* KMPlaceholderTextView.swift */,
 			);
 			name = Helpers;
 			sourceTree = "<group>";
@@ -145,7 +180,7 @@
 			children = (
 				845F97241DE44F19005BE203 /* DetailBaseCell.swift */,
 				845F97261DE451C1005BE203 /* DetailImageCell.swift */,
-				845F97281DE46849005BE203 /* DetailButtonsCell.swift */,
+				845F97281DE46849005BE203 /* DetailTitleCell.swift */,
 				845F972A1DE47373005BE203 /* DetailTextCell.swift */,
 			);
 			name = DetailCells;
@@ -158,6 +193,7 @@
 				845F97181DE360D2005BE203 /* MainVC.swift */,
 				845F971A1DE36AE9005BE203 /* MenuVC.swift */,
 				845F97221DE44E89005BE203 /* DetailVC.swift */,
+				8414DB681DE5EA2F00175DB6 /* AddVC.swift */,
 			);
 			name = Controllers;
 			sourceTree = "<group>";
@@ -165,6 +201,7 @@
 		84B6811C1DE2E9F2009D1B22 /* View */ = {
 			isa = PBXGroup;
 			children = (
+				8414DB6A1DE5EF0400175DB6 /* AddNewCells */,
 				845F971C1DE36B5E005BE203 /* MenuCell.swift */,
 				845F97201DE3797A005BE203 /* MainCell.swift */,
 				845F972C1DE4A2F3005BE203 /* DetailCells */,
@@ -305,18 +342,25 @@
 				845F97191DE360D2005BE203 /* MainVC.swift in Sources */,
 				845F97251DE44F19005BE203 /* DetailBaseCell.swift in Sources */,
 				845F97231DE44E89005BE203 /* DetailVC.swift in Sources */,
-				845F97291DE46849005BE203 /* DetailButtonsCell.swift in Sources */,
+				845F97291DE46849005BE203 /* DetailTitleCell.swift in Sources */,
 				845F97271DE451C1005BE203 /* DetailImageCell.swift in Sources */,
+				8414DB701DE5FD1B00175DB6 /* AddIngrideintsCell.swift in Sources */,
+				8414DB691DE5EA2F00175DB6 /* AddVC.swift in Sources */,
+				8414DB771DE6EFC800175DB6 /* AddInstructionsCell.swift in Sources */,
 				845F972B1DE47373005BE203 /* DetailTextCell.swift in Sources */,
 				84212C631DE2E82C00CBE86E /* LoginVC.swift in Sources */,
+				8414DB721DE5FE1D00175DB6 /* KMPlaceholderTextView.swift in Sources */,
 				845F971B1DE36AE9005BE203 /* MenuVC.swift in Sources */,
 				845F97211DE3797A005BE203 /* MainCell.swift in Sources */,
+				8414DB6C1DE5EF1F00175DB6 /* AddImageCell.swift in Sources */,
 				845F971F1DE36D87005BE203 /* MenuTransitionManager.swift in Sources */,
+				8414DB6E1DE5F65700175DB6 /* AddTitleCell.swift in Sources */,
 				845F97171DE357E3005BE203 /* LoginService.swift in Sources */,
 				8419837C1DE4C56100BACD9E /* Extentions.swift in Sources */,
 				84212C611DE2E82C00CBE86E /* AppDelegate.swift in Sources */,
 				845F971D1DE36B5E005BE203 /* MenuCell.swift in Sources */,
 				845F97151DE3554C005BE203 /* Constants.swift in Sources */,
+				8414DB751DE62DE300175DB6 /* Recipe.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

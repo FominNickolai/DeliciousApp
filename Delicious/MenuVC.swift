@@ -7,8 +7,11 @@
 //
 
 import UIKit
+import SwiftKeychainWrapper
 
-class MenuVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
+class MenuVC: UIViewController {
+    
+    weak var mainVC: MainVC?
     
     lazy var tableView: UITableView = {
         let table = UITableView()
@@ -47,8 +50,9 @@ class MenuVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
         print("MenuVC Deinit")
     }
     
-    // MARK: - Table view data source
-    
+}
+
+extension MenuVC: UITableViewDataSource {
     func numberOfSections(in tableView: UITableView) -> Int {
         // #warning Incomplete implementation, return the number of sections
         return 1
@@ -66,6 +70,22 @@ class MenuVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
         cell.menuItem = menuItems[indexPath.row]
         
         return cell
+    }
+}
+
+extension MenuVC: UITableViewDelegate {
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        switch indexPath.item {
+        case 0:
+            dismiss(animated: true, completion: nil)
+        case 4:
+            mainVC?.showAddVC()
+        case 5:
+            mainVC?.handleLogOutButton()
+        default:
+            break
+        }
     }
     
 }

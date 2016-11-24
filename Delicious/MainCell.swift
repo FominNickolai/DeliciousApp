@@ -10,6 +10,28 @@ import UIKit
 
 class MainCell: UICollectionViewCell {
     
+    var recipe: Recipe? {
+        didSet {
+            if let title = recipe?.title {
+                let shadow = NSShadow()
+                shadow.shadowOffset = CGSize(width: 1, height: 1)
+                shadow.shadowColor = UIColor.black
+                let attributes = [
+                    NSShadowAttributeName : shadow,
+                    NSForegroundColorAttributeName : UIColor.white,
+                    NSFontAttributeName: UIFont(name: "HelveticaNeue", size: 20)
+                ]
+                cellTitle.attributedText = NSAttributedString(string: title, attributes: attributes)
+            }
+            
+            if let urlString = recipe?.imageUrl {
+                cellImage.loadImageUsingCacheWithUrlString(urlString: urlString)
+            }
+            
+            
+        }
+    }
+    
     let isNew: UILabel = {
         let label = UILabel()
         label.text = "NEW"
@@ -34,15 +56,6 @@ class MainCell: UICollectionViewCell {
     
     let cellTitle: UILabel = {
         let label = UILabel()
-        let shadow = NSShadow()
-        shadow.shadowOffset = CGSize(width: 1, height: 1)
-        shadow.shadowColor = UIColor.black
-        let attributes = [
-            NSShadowAttributeName : shadow,
-            NSForegroundColorAttributeName : UIColor.white,
-            NSFontAttributeName: UIFont(name: "HelveticaNeue", size: 20)
-        ]
-        label.attributedText = NSAttributedString(string: "Grilled Steak with vinegar sauce", attributes: attributes)
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
@@ -56,6 +69,9 @@ class MainCell: UICollectionViewCell {
     
     override init(frame: CGRect) {
         super.init(frame: frame)
+        
+        self.layer.cornerRadius = 8
+        self.layer.masksToBounds = true
         
         addSubview(cellImage)
         addSubview(isNew)

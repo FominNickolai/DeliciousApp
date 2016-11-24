@@ -10,8 +10,6 @@ import UIKit
 
 class DetailVC: UIViewController {
     
-    let text = ["", "", "Lorem ipsum – псевдо-латинский текст, который используется для веб дизайна, типографии, оборудования, и распечатки вместо английского текста для того, чтобы сделать ударение не на содержание, а на элементы дизайна. Такой текст также называется как заполнитель. Это очень удобный инструмент для моделей (макетов). Он помогает выделить визуальные элементы в документе или презентации, например текст, шрифт или разметка. Lorem ipsum по большей части является элементом латинского текста классического автора и философа Цицерона.", "В профессиональной сфере часто случается так, что личные или корпоративные клиенты заказывают, чтобы публикация была сделана и представлена еще тогда, когда фактическое содержание все еще не готово. Вспомните новостные блоги, где информация публикуется каждый час в живом порядке. Тем не менее, читатели склонны к тому, чтобы быть отвлеченными доступным контентом, скажем, любым текстом, который был скопирован из газеты или интернета. Они предпочитают сконцентрироваться на тексте, пренебрегая разметкой и ее элементами. К тому же, случайный текст подвергается риску быть неумышленно смешным или оскорбительным, что является неприемлемым риском в корпоративной среде. Lorem ipsum, а также ее многие варианты были использованы в работе начиная с 1960-ых, и очень даже похоже, что еще с 16-го века."]
-    
     lazy var collectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
 //        layout.headerReferenceSize = CGSize(width: self.view.frame.width, height: 200)
@@ -39,8 +37,10 @@ class DetailVC: UIViewController {
     }()
     
     let cellImageId = "cellId"
-    let cellButtonsId = "cellButtonsId"
+    let cellTitleId = "cellTitleId"
     let cellTextId = "cellTextId"
+    
+    var recipe: Recipe?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -62,16 +62,16 @@ class DetailVC: UIViewController {
         
         collectionView.backgroundColor = .clear
         collectionView.register(DetailImageCell.self, forCellWithReuseIdentifier: cellImageId)
-        collectionView.register(DetailButtonsCell.self, forCellWithReuseIdentifier: cellButtonsId)
+        collectionView.register(DetailTitleCell.self, forCellWithReuseIdentifier: cellTitleId)
         collectionView.register(DetailTextCell.self, forCellWithReuseIdentifier: cellTextId)
     }
     
     fileprivate func estimateFrameForText(text: String) -> CGRect {
         
-        let size = CGSize(width: UIScreen.main.bounds.width - 50, height: 1000)
+        let size = CGSize(width: UIScreen.main.bounds.width - 60, height: 1000)
         let options = NSStringDrawingOptions.usesFontLeading.union(.usesLineFragmentOrigin)
                 
-        return NSString(string: text).boundingRect(with: size, options: options, attributes: [NSFontAttributeName: UIFont.systemFont(ofSize: 16)], context: nil)
+        return NSString(string: text).boundingRect(with: size, options: options, attributes: [NSFontAttributeName: UIFont(name: "HelveticaNeue-Light", size: 16)!], context: nil)
         
     }
     
@@ -91,13 +91,24 @@ extension DetailVC: UICollectionViewDataSource {
         
         if indexPath.item == 0 {
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: cellImageId, for: indexPath) as! DetailImageCell
+            if let imageUrl = recipe?.imageUrl {
+                cell.imageView.loadImageUsingCacheWithUrlString(urlString: imageUrl)
+            }
             return cell
         } else if indexPath.item == 1 {
-            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: cellButtonsId, for: indexPath) as! DetailButtonsCell
+            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: cellTitleId, for: indexPath) as! DetailTitleCell
+                cell.recipe = recipe
             return cell
         } else {
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: cellTextId, for: indexPath) as! DetailTextCell
-            cell.textCell = text[indexPath.item]
+            if indexPath.item == 2 {
+                cell.recipeText = recipe?.ingridients
+                cell.titleCellTopView.text = "Ingridients"
+            } else {
+                cell.recipeText = recipe?.descriptionSteps
+                cell.titleCellTopView.text = "Instructions"
+
+            }
 
             return cell
         }
@@ -126,7 +137,14 @@ extension DetailVC: UICollectionViewDelegateFlowLayout {
         } else if indexPath.item == 1 {
             height =  103
         } else {
-            let messageText = text[indexPath.item]
+            
+            var messageText: String = ""
+            if indexPath.item == 2, let text = recipe?.ingridients {
+                messageText = text
+            } else if indexPath.item == 3, let text = recipe?.descriptionSteps {
+                messageText = text
+            }
+            
             height = estimateFrameForText(text: messageText).height + 100
         }
         print(height)

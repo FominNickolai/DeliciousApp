@@ -8,7 +8,7 @@
 
 import UIKit
 
-protocol MenuTransitionManagerDelegate {
+protocol MenuTransitionManagerDelegate: class {
     func dismiss()
 }
 
@@ -32,7 +32,7 @@ class MenuTransitionManager: NSObject {
         }
     }
     
-    var delegate: MenuTransitionManagerDelegate?
+    weak var delegate: MenuTransitionManagerDelegate?
 }
 
 extension MenuTransitionManager: UIViewControllerTransitioningDelegate {

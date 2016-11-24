@@ -1,38 +1,43 @@
 //
-//  DetialTextCell.swift
+//  AddInstructionsCell.swift
 //  Delicious
 //
-//  Created by Fomin Nickolai on 11/22/16.
+//  Created by Fomin Nickolai on 11/24/16.
 //  Copyright © 2016 Fomin Nickolai. All rights reserved.
 //
 
 import UIKit
 
-class DetailTextCell: DetailBaseCell {
+class AddInstructionsCell: DetailBaseCell {
     
-    var recipeText: String? {
+    weak var addVC: AddVC?
+    
+    var textCell: String? {
         didSet {
-            if let text = recipeText {
-                textView.text = text
-            }
+            textView.text = textCell
         }
     }
     
-    let textView: UITextView = {
-        let tv = UITextView()
+    let textView: KMPlaceholderTextView = {
+        let tv = KMPlaceholderTextView()
         tv.font = UIFont(name: "HelveticaNeue-Light", size: 16)
-        tv.text = "1. Blend the ingredients for pesto in a processor and keep aside."
         tv.backgroundColor = .clear
+        tv.placeholder = "Enter Ingridients"
+        tv.placeholderColor = .white
+        tv.textContainerInset = UIEdgeInsets(top: 5, left: 5, bottom: 0, right: 0)
         tv.textColor = .white
+        tv.layer.borderWidth = 1
+        tv.layer.borderColor = UIColor.white.cgColor
+        tv.layer.cornerRadius = 8
+        tv.layer.masksToBounds = true
         tv.translatesAutoresizingMaskIntoConstraints = false
-        tv.isEditable = false
         tv.textAlignment = .justified
         return tv
     }()
     
     let titleCellTopView: UILabel = {
         let label = UILabel()
-        label.text = "Ingridients"
+        label.text = "Type Instructions"
         label.textColor = .white
         label.font = UIFont(name: "HelveticaNeue-Light", size: 18)
         label.backgroundColor = UIColor(red:1,  green:0.404,  blue:0.384, alpha:1)
@@ -68,3 +73,4 @@ class DetailTextCell: DetailBaseCell {
     }
     
 }
+

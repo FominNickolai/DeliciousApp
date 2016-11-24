@@ -104,7 +104,9 @@ class  LoginService {
         
         DataService.ds.createFirebaseDBUser(uid: id, userData: userData)
         
-        _ = KeychainWrapper.standard.set(id, forKey: KEY_UID)
+        DispatchQueue.main.async {
+            _ = KeychainWrapper.standard.set(id, forKey: KEY_UID)
+        }
         
         
         

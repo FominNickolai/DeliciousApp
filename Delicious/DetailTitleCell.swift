@@ -8,13 +8,33 @@
 
 import UIKit
 
-class DetailButtonsCell: DetailBaseCell {
+class DetailTitleCell: DetailBaseCell {
+    
+    var recipe: Recipe? {
+        didSet {
+            if let title = recipe?.title {
+                let shadow = NSShadow()
+                shadow.shadowOffset = CGSize(width: 1, height: 1)
+                shadow.shadowColor = UIColor.black
+                let attributes = [
+                    NSShadowAttributeName : shadow,
+                    NSForegroundColorAttributeName : UIColor.white,
+                    NSFontAttributeName: UIFont(name: "HelveticaNeue", size: 20)
+                ]
+                cellTitle.attributedText = NSAttributedString(string: title, attributes: attributes)
+            }
+            if let timeCook = recipe?.timeCook {
+                timeToCook.text = timeCook
+            }
+            if let count = recipe?.personCount {
+                personCount.text = count
+            }
+        }
+    }
     
     let clockImage: UIImageView = {
         let image = UIImageView()
-        let baseImage = UIImage(named: "Clock")
-        let changeColor = UIColor(red:1,  green:0.404,  blue:0.384, alpha:1)
-        image.image = baseImage?.maskWithColor(color: changeColor)
+        image.image = UIImage(named: "Clock")
         image.contentMode = .scaleAspectFit
         image.translatesAutoresizingMaskIntoConstraints = false
         return image
@@ -48,15 +68,6 @@ class DetailButtonsCell: DetailBaseCell {
     
     let cellTitle: UILabel = {
         let label = UILabel()
-        let shadow = NSShadow()
-        shadow.shadowOffset = CGSize(width: 1, height: 1)
-        shadow.shadowColor = UIColor.black
-        let attributes = [
-            NSShadowAttributeName : shadow,
-            NSForegroundColorAttributeName : UIColor.white,
-            NSFontAttributeName: UIFont(name: "HelveticaNeue", size: 20)
-        ]
-        label.attributedText = NSAttributedString(string: "Grilled Steak with vinegar sauce", attributes: attributes)
         label.translatesAutoresizingMaskIntoConstraints = false
         label.backgroundColor = UIColor(red:1,  green:0.404,  blue:0.384, alpha:1)
         label.textAlignment = .center
