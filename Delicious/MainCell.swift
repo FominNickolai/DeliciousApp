@@ -73,7 +73,7 @@ class MainCell: UICollectionViewCell {
     
     let favoriteImage: UIImageView = {
         let imageView = UIImageView()
-        imageView.image = UIImage(named: "FavoriteActive")
+        imageView.image = UIImage(named: "active_heart")
         imageView.contentMode = .scaleAspectFit
         imageView.translatesAutoresizingMaskIntoConstraints = false
         return imageView
@@ -115,8 +115,8 @@ class MainCell: UICollectionViewCell {
         blurView.heightAnchor.constraint(equalToConstant: 50).isActive = true
         favoriteImage.rightAnchor.constraint(equalTo: blurView.rightAnchor, constant: -10).isActive = true
         favoriteImage.centerYAnchor.constraint(equalTo: blurView.centerYAnchor).isActive = true
-        favoriteImage.widthAnchor.constraint(equalToConstant: 20).isActive = true
-        favoriteImage.heightAnchor.constraint(equalToConstant: 15).isActive = true
+        favoriteImage.widthAnchor.constraint(equalToConstant: 21).isActive = true
+        favoriteImage.heightAnchor.constraint(equalToConstant: 20).isActive = true
         
         likesCountLabel.rightAnchor.constraint(equalTo: favoriteImage.leftAnchor, constant: -5).isActive = true
         likesCountLabel.centerYAnchor.constraint(equalTo: favoriteImage.centerYAnchor).isActive = true

@@ -204,7 +204,7 @@ extension AddVC {
         
         let imageName = NSUUID().uuidString
         let ref = FIRStorage.storage().reference().child("recipe-images").child(imageName)
-        if let uploadData = UIImageJPEGRepresentation(image, 0.2) {
+        if let uploadData = UIImageJPEGRepresentation(image, 0.5) {
             ref.put(uploadData, metadata: nil, completion: { (metadata, error) in
                 
                 if error != nil {

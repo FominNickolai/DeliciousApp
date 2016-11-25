@@ -79,7 +79,6 @@ class DetailTitleCell: DetailBaseCell {
     
     lazy var isFavoriteButton: UIButton = {
         let button = UIButton(type: .custom)
-        button.setBackgroundImage(UIImage(named: "Favorite"), for: .normal)
         button.addTarget(self, action: #selector(handleFavoriteButtonPressed), for: .touchUpInside)
         button.translatesAutoresizingMaskIntoConstraints = false
         return button
@@ -123,6 +122,8 @@ class DetailTitleCell: DetailBaseCell {
         
         isFavoriteButton.rightAnchor.constraint(equalTo: rightAnchor, constant: -15).isActive = true
         isFavoriteButton.centerYAnchor.constraint(equalTo: personCount.centerYAnchor).isActive = true
+        isFavoriteButton.widthAnchor.constraint(equalToConstant: 36).isActive = true
+        isFavoriteButton.heightAnchor.constraint(equalToConstant: 30).isActive = true
         
 //        let stackView = UIStackView()
 //        stackView.axis = .horizontal

@@ -176,7 +176,7 @@ extension DetailVC {
                 let indexPath = IndexPath(item: 1, section: 0)
                 let cell = self.collectionView.cellForItem(at: indexPath) as! DetailTitleCell
                 DispatchQueue.main.async(execute: {
-                    cell.isFavoriteButton.setImage(UIImage(named: "Favorite"), for: .normal)
+                    cell.isFavoriteButton.setImage(UIImage(named: "inactive_heart"), for: .normal)
                 })
             })
             
@@ -195,7 +195,7 @@ extension DetailVC {
                 let indexPath = IndexPath(item: 1, section: 0)
                 let cell = self.collectionView.cellForItem(at: indexPath) as! DetailTitleCell
                 DispatchQueue.main.async(execute: {
-                    cell.isFavoriteButton.setImage(UIImage(named: "Favorite"), for: .normal)
+                    cell.isFavoriteButton.setImage(UIImage(named: "active_heart"), for: .normal)
                 })
                 
             })
@@ -239,9 +239,9 @@ extension DetailVC: UICollectionViewDataSource {
             cell.detailVC = self
             cell.recipe = recipe
             if checkIfLiked() {
-                cell.isFavoriteButton.setImage(UIImage(named: "FavoriteActive"), for: .normal)
+                cell.isFavoriteButton.setImage(UIImage(named: "active_heart"), for: .normal)
             } else {
-                cell.isFavoriteButton.setImage(UIImage(named: "Favorite"), for: .normal)
+                cell.isFavoriteButton.setImage(UIImage(named: "inactive_heart"), for: .normal)
             }
             
             return cell
