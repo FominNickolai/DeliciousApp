@@ -71,11 +71,12 @@ class MainCell: UICollectionViewCell {
         return blurEffectView
     }()
     
-    let isFavoriteButton: UIButton = {
-        let button = UIButton(type: .custom)
-        button.setBackgroundImage(UIImage(named: "Favorite"), for: .normal)
-        button.translatesAutoresizingMaskIntoConstraints = false
-        return button
+    let favoriteImage: UIImageView = {
+        let imageView = UIImageView()
+        imageView.image = UIImage(named: "FavoriteActive")
+        imageView.contentMode = .scaleAspectFit
+        imageView.translatesAutoresizingMaskIntoConstraints = false
+        return imageView
     }()
     
     let likesCountLabel: UILabel = {
@@ -98,7 +99,7 @@ class MainCell: UICollectionViewCell {
         addSubview(isNew)
         addSubview(blurView)
         blurView.addSubview(cellTitle)
-        blurView.addSubview(isFavoriteButton)
+        blurView.addSubview(favoriteImage)
         blurView.addSubview(likesCountLabel)
         
         
@@ -112,13 +113,13 @@ class MainCell: UICollectionViewCell {
         blurView.rightAnchor.constraint(equalTo: rightAnchor).isActive = true
         blurView.bottomAnchor.constraint(equalTo: bottomAnchor).isActive = true
         blurView.heightAnchor.constraint(equalToConstant: 50).isActive = true
-        isFavoriteButton.rightAnchor.constraint(equalTo: blurView.rightAnchor, constant: -10).isActive = true
-        isFavoriteButton.centerYAnchor.constraint(equalTo: blurView.centerYAnchor).isActive = true
-        isFavoriteButton.widthAnchor.constraint(equalToConstant: 36).isActive = true
-        isFavoriteButton.heightAnchor.constraint(equalToConstant: 31).isActive = true
+        favoriteImage.rightAnchor.constraint(equalTo: blurView.rightAnchor, constant: -10).isActive = true
+        favoriteImage.centerYAnchor.constraint(equalTo: blurView.centerYAnchor).isActive = true
+        favoriteImage.widthAnchor.constraint(equalToConstant: 20).isActive = true
+        favoriteImage.heightAnchor.constraint(equalToConstant: 15).isActive = true
         
-        likesCountLabel.rightAnchor.constraint(equalTo: isFavoriteButton.leftAnchor, constant: -5).isActive = true
-        likesCountLabel.centerYAnchor.constraint(equalTo: isFavoriteButton.centerYAnchor).isActive = true
+        likesCountLabel.rightAnchor.constraint(equalTo: favoriteImage.leftAnchor, constant: -5).isActive = true
+        likesCountLabel.centerYAnchor.constraint(equalTo: favoriteImage.centerYAnchor).isActive = true
         likesCountLabel.widthAnchor.constraint(equalToConstant: 40).isActive = true
         
         cellTitle.leftAnchor.constraint(equalTo: blurView.leftAnchor, constant: 10).isActive = true

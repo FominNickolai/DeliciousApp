@@ -20,6 +20,7 @@
 		84212C631DE2E82C00CBE86E /* LoginVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84212C621DE2E82C00CBE86E /* LoginVC.swift */; };
 		84212C681DE2E82C00CBE86E /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 84212C671DE2E82C00CBE86E /* Assets.xcassets */; };
 		84212C6B1DE2E82C00CBE86E /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 84212C691DE2E82C00CBE86E /* LaunchScreen.storyboard */; };
+		842FBFC61DE8434D001BDCFB /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = 842FBFC51DE8434D001BDCFB /* User.swift */; };
 		845F970E1DE34DDD005BE203 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 845F970D1DE34DDD005BE203 /* GoogleService-Info.plist */; };
 		845F97121DE3551F005BE203 /* DataService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 845F97111DE3551F005BE203 /* DataService.swift */; };
 		845F97151DE3554C005BE203 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 845F97141DE3554C005BE203 /* Constants.swift */; };
@@ -53,6 +54,7 @@
 		84212C671DE2E82C00CBE86E /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		84212C6A1DE2E82C00CBE86E /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		84212C6C1DE2E82C00CBE86E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		842FBFC51DE8434D001BDCFB /* User.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
 		845F970D1DE34DDD005BE203 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		845F970F1DE35305005BE203 /* Delicious.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Delicious.entitlements; sourceTree = "<group>"; };
 		845F97111DE3551F005BE203 /* DataService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DataService.swift; sourceTree = "<group>"; };
@@ -115,6 +117,7 @@
 			isa = PBXGroup;
 			children = (
 				8414DB741DE62DE300175DB6 /* Recipe.swift */,
+				842FBFC51DE8434D001BDCFB /* User.swift */,
 			);
 			name = Model;
 			sourceTree = "<group>";
@@ -358,6 +361,7 @@
 				845F97171DE357E3005BE203 /* LoginService.swift in Sources */,
 				8419837C1DE4C56100BACD9E /* Extentions.swift in Sources */,
 				84212C611DE2E82C00CBE86E /* AppDelegate.swift in Sources */,
+				842FBFC61DE8434D001BDCFB /* User.swift in Sources */,
 				845F971D1DE36B5E005BE203 /* MenuCell.swift in Sources */,
 				845F97151DE3554C005BE203 /* Constants.swift in Sources */,
 				8414DB751DE62DE300175DB6 /* Recipe.swift in Sources */,

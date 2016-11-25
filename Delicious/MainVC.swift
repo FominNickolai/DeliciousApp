@@ -74,6 +74,8 @@ class MainVC: UIViewController {
     
     var recipes = [Recipe]()
     
+    var user: User?
+    
     var shownIndexPath = Set<Int>()
     
     override func viewDidAppear(_ animated: Bool) {
@@ -121,6 +123,8 @@ class MainVC: UIViewController {
         self.view.addGestureRecognizer(swipeRight)
         
         fetchAllRecipes()
+        
+        fetchUserData()
         
         do {
             try segmentedControl.set(index: 0, animated: true)
@@ -272,6 +276,29 @@ extension MainVC {
             
         })
     }
+    
+    func fetchUserData() {
+        
+        let userId = FIRAuth.auth()?.currentUser?.uid
+        let ref = FIRDatabase.database().reference().child("users").child(userId!)
+        ref.observeSingleEvent(of: .value, with: {(snapshot) in
+            
+            guard let dictionary = snapshot.value as? [String: AnyObject] else {
+                return
+            }
+            
+            guard let likedPosts = dictionary["likedPosts"] as? [String: Int] else {
+                return
+            }
+            let user = User()
+            user.likedPosts = [String]()
+            for (key, _) in likedPosts {
+                user.likedPosts?.append(key)
+            }
+            self.user = user
+            
+        })
+    }
 }
 
 extension MainVC: MenuTransitionManagerDelegate {
@@ -307,6 +334,7 @@ extension MainVC: UICollectionViewDelegate {
         navigationItem.backBarButtonItem = backItem
         let controller = DetailVC()
         controller.recipe = recipes[indexPath.item]
+        controller.user = user
         navigationController?.pushViewController(controller, animated: true)
         
     }

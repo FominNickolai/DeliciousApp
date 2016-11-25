@@ -111,7 +111,7 @@ class Recipe {
             self._fromId = fromId
         }
         
-        _recipeRef = DataService.ds.REF_POSTS.child(_fromId)
+        _recipeRef = DataService.ds.REF_POSTS.child(_recipeId)
     }
     
     func adjustLikes(addLike: Bool) {

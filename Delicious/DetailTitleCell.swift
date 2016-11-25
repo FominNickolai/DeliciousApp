@@ -10,6 +10,8 @@ import UIKit
 
 class DetailTitleCell: DetailBaseCell {
     
+    weak var detailVC: DetailVC?
+    
     var recipe: Recipe? {
         didSet {
             if let title = recipe?.title {
@@ -29,6 +31,7 @@ class DetailTitleCell: DetailBaseCell {
             if let count = recipe?.personCount {
                 personCount.text = count
             }
+            
         }
     }
     
@@ -74,9 +77,10 @@ class DetailTitleCell: DetailBaseCell {
         return label
     }()
     
-    let isFavoriteButton: UIButton = {
+    lazy var isFavoriteButton: UIButton = {
         let button = UIButton(type: .custom)
         button.setBackgroundImage(UIImage(named: "Favorite"), for: .normal)
+        button.addTarget(self, action: #selector(handleFavoriteButtonPressed), for: .touchUpInside)
         button.translatesAutoresizingMaskIntoConstraints = false
         return button
     }()
@@ -138,6 +142,10 @@ class DetailTitleCell: DetailBaseCell {
 //        ingridientsButton.heightAnchor.constraint(equalToConstant: 48).isActive = true
 
         
+    }
+    
+    func handleFavoriteButtonPressed() {
+        detailVC?.changeLikesValue()
     }
 }
 

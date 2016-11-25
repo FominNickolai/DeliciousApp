@@ -54,6 +54,7 @@ class DetailVC: UIViewController {
     let cellTextId = "cellTextId"
     
     var recipe: Recipe?
+    var user: User?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -147,6 +148,76 @@ extension DetailVC {
             })
         }
     }
+    
+    func changeLikesValue() {
+        
+        
+        //let currentLikesCount = recipe?.likes
+        let refUsers = FIRDatabase.database().reference().child("users")
+        let userId = FIRAuth.auth()?.currentUser?.uid
+        let userRef = refUsers.child(userId!)
+        guard let key = recipe?.recipeId else {
+            return
+        }
+        
+        let refPosts = FIRDatabase.database().reference().child("posts")
+        let refPostLikesUpdate = refPosts.child(key)
+        
+        if checkIfLiked() {
+            userRef.child("likedPosts").child(key).removeValue(completionBlock: { (error, ref) in
+                
+                if error != nil {
+                    print("Failed to delete message")
+                    return
+                }
+                
+                self.user?.likedPosts?.remove(object: key)
+                self.recipe?.adjustLikes(addLike: false)
+                let indexPath = IndexPath(item: 1, section: 0)
+                let cell = self.collectionView.cellForItem(at: indexPath) as! DetailTitleCell
+                DispatchQueue.main.async(execute: {
+                    cell.isFavoriteButton.setImage(UIImage(named: "Favorite"), for: .normal)
+                })
+            })
+            
+      
+        } else {
+            
+            let values: [String: AnyObject] = [key: 1 as AnyObject]
+            userRef.child("likedPosts").updateChildValues(values, withCompletionBlock: {(error, ref) in
+                
+                if error != nil {
+                    return
+                }
+                
+                self.user?.likedPosts?.append(key)
+                self.recipe?.adjustLikes(addLike: true)
+                let indexPath = IndexPath(item: 1, section: 0)
+                let cell = self.collectionView.cellForItem(at: indexPath) as! DetailTitleCell
+                DispatchQueue.main.async(execute: {
+                    cell.isFavoriteButton.setImage(UIImage(named: "Favorite"), for: .normal)
+                })
+                
+            })
+            
+            
+        }
+    }
+    
+    func checkIfLiked() -> Bool {
+        guard let key = recipe?.recipeId else {
+            return false
+        }
+        guard let user = self.user else {
+            return false
+        }
+        guard let isLiked = user.likedPosts?.contains(key) else {
+            return false
+        }
+        
+        return isLiked
+    }
+    
 }
 
 //UICollectionViewDataSource
@@ -165,7 +236,14 @@ extension DetailVC: UICollectionViewDataSource {
             return cell
         } else if indexPath.item == 1 {
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: cellTitleId, for: indexPath) as! DetailTitleCell
-                cell.recipe = recipe
+            cell.detailVC = self
+            cell.recipe = recipe
+            if checkIfLiked() {
+                cell.isFavoriteButton.setImage(UIImage(named: "FavoriteActive"), for: .normal)
+            } else {
+                cell.isFavoriteButton.setImage(UIImage(named: "Favorite"), for: .normal)
+            }
+            
             return cell
         } else {
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: cellTextId, for: indexPath) as! DetailTextCell
