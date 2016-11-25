@@ -12,33 +12,35 @@ import Firebase
 class Recipe {
     
     private var _title: String!
-    private var _imageUrl: String!
-    private var _timeCook: String!
+    private var _recipeImage: String!
+    private var _timeToCook: String!
     private var _personCount: String!
-    private var _descriptionSteps: String!
+    private var _instructions: String!
     private var _ingridients: String!
-    private var _recipeKey: String!
+    private var _fromId: String!
+    private var _recipeId: String!
     private var _likes: Int!
     private var _recipeRef: FIRDatabaseReference!
+    private var _timestamp: String!
     
     var title: String {
         return _title
     }
     
-    var imageUrl: String {
-        return _imageUrl
+    var recipeImage: String {
+        return _recipeImage
     }
     
-    var timeCook: String {
-        return _timeCook
+    var timeToCook: String {
+        return _timeToCook
     }
     
     var personCount: String {
         return _personCount
     }
     
-    var descriptionSteps: String {
-        return _descriptionSteps
+    var instructions: String {
+        return _instructions
     }
     
     var ingridients: String {
@@ -49,51 +51,67 @@ class Recipe {
         return _likes
     }
     
-    var recipeKey: String {
-        return _recipeKey
+    var fromId: String {
+        return _fromId
     }
     
-    init(title: String, imageUrl: String, likes: Int) {
+    var timestamp: String {
+        return _timestamp
+    }
+    
+    var recipeId: String {
+        return _recipeId
+    }
+    
+    init(title: String, recipeImage: String, likes: Int) {
         
         self._title = title
-        self._imageUrl = imageUrl
+        self._recipeImage = recipeImage
         self._likes = likes
         
     }
     
-    init(recipeKey: String, recipeData: Dictionary<String, AnyObject>) {
+    init(recipeId: String, recipeData: Dictionary<String, AnyObject>) {
         
-        self._recipeKey = recipeKey
+        self._recipeId = recipeId
         
         if let title = recipeData["title"] as? String {
             self._title = title
         }
         
-        if let imageUrl = recipeData["imageUrl"] as? String {
-            self._imageUrl = imageUrl
+        if let imageUrl = recipeData["recipeImage"] as? String {
+            self._recipeImage = imageUrl
         }
         
-        if let timeCook = recipeData["timeCook"] as? String {
-            self._timeCook = timeCook
+        if let timeCook = recipeData["timeToCook"] as? String {
+            self._timeToCook = timeCook
         }
         
         if let personCount = recipeData["personCount"] as? String {
             self._personCount = personCount
         }
         
-        if let descriptionSteps = recipeData["descriptionSteps"] as? String {
-            self._descriptionSteps = descriptionSteps
+        if let instructions = recipeData["instructions"] as? String {
+            self._instructions = instructions
         }
         
         if let ingridients = recipeData["ingridients"] as? String {
             self._ingridients = ingridients
         }
         
+        if let timestamp = recipeData["timestamp"] as? String {
+            self._timestamp = timestamp
+        }
+        
         if let likes = recipeData["likes"] as? Int {
             self._likes = likes
         }
         
-        _recipeRef = DataService.ds.REF_POSTS.child(_recipeKey)
+        if let fromId = recipeData["fromId"] as? String {
+            self._fromId = fromId
+        }
+        
+        _recipeRef = DataService.ds.REF_POSTS.child(_fromId)
     }
     
     func adjustLikes(addLike: Bool) {

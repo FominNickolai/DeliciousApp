@@ -24,8 +24,12 @@ class MainCell: UICollectionViewCell {
                 cellTitle.attributedText = NSAttributedString(string: title, attributes: attributes)
             }
             
-            if let urlString = recipe?.imageUrl {
+            if let urlString = recipe?.recipeImage {
                 cellImage.loadImageUsingCacheWithUrlString(urlString: urlString)
+            }
+            
+            if let likes = recipe?.likes {
+                likesCountLabel.text = String(likes)
             }
             
             
@@ -67,6 +71,23 @@ class MainCell: UICollectionViewCell {
         return blurEffectView
     }()
     
+    let isFavoriteButton: UIButton = {
+        let button = UIButton(type: .custom)
+        button.setBackgroundImage(UIImage(named: "Favorite"), for: .normal)
+        button.translatesAutoresizingMaskIntoConstraints = false
+        return button
+    }()
+    
+    let likesCountLabel: UILabel = {
+        let label = UILabel()
+        label.text = "1"
+        label.textColor = .white
+        label.font = UIFont(name: "HelveticaNeue-Light", size: 15)
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.textAlignment = .right
+        return label
+    }()
+    
     override init(frame: CGRect) {
         super.init(frame: frame)
         
@@ -77,6 +98,9 @@ class MainCell: UICollectionViewCell {
         addSubview(isNew)
         addSubview(blurView)
         blurView.addSubview(cellTitle)
+        blurView.addSubview(isFavoriteButton)
+        blurView.addSubview(likesCountLabel)
+        
         
         cellImage.widthAnchor.constraint(equalTo: widthAnchor).isActive = true
         cellImage.heightAnchor.constraint(equalTo: heightAnchor).isActive = true
@@ -88,10 +112,18 @@ class MainCell: UICollectionViewCell {
         blurView.rightAnchor.constraint(equalTo: rightAnchor).isActive = true
         blurView.bottomAnchor.constraint(equalTo: bottomAnchor).isActive = true
         blurView.heightAnchor.constraint(equalToConstant: 50).isActive = true
-        cellTitle.leftAnchor.constraint(equalTo: blurView.leftAnchor, constant: 10).isActive = true
-        cellTitle.rightAnchor.constraint(equalTo: blurView.rightAnchor, constant: -10).isActive = true
-        cellTitle.centerYAnchor.constraint(equalTo: blurView.centerYAnchor).isActive = true
+        isFavoriteButton.rightAnchor.constraint(equalTo: blurView.rightAnchor, constant: -10).isActive = true
+        isFavoriteButton.centerYAnchor.constraint(equalTo: blurView.centerYAnchor).isActive = true
+        isFavoriteButton.widthAnchor.constraint(equalToConstant: 36).isActive = true
+        isFavoriteButton.heightAnchor.constraint(equalToConstant: 31).isActive = true
         
+        likesCountLabel.rightAnchor.constraint(equalTo: isFavoriteButton.leftAnchor, constant: -5).isActive = true
+        likesCountLabel.centerYAnchor.constraint(equalTo: isFavoriteButton.centerYAnchor).isActive = true
+        likesCountLabel.widthAnchor.constraint(equalToConstant: 40).isActive = true
+        
+        cellTitle.leftAnchor.constraint(equalTo: blurView.leftAnchor, constant: 10).isActive = true
+        cellTitle.rightAnchor.constraint(equalTo: likesCountLabel.leftAnchor, constant: -10).isActive = true
+        cellTitle.centerYAnchor.constraint(equalTo: blurView.centerYAnchor).isActive = true
         
         
     }

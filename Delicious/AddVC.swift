@@ -50,7 +50,7 @@ class AddVC: UIViewController, UINavigationControllerDelegate {
     let cellIngridientsId = "cellIngridientsId"
     let cellInstructionsId = "cellInstructionsId"
     
-    let propertiesArray = ["cellTitle", "timeToCook", "personCount", "ingridients", "instructions"]
+    let propertiesArray = ["title", "timeToCook", "personCount", "ingridients", "instructions"]
     
     var recipeToSend: [String: String] = [:] {
         didSet {
@@ -67,6 +67,8 @@ class AddVC: UIViewController, UINavigationControllerDelegate {
     }
     
     var imageRecipe: UIImage?
+    
+    var recipe: Recipe?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -126,7 +128,7 @@ extension AddVC {
         let okAction = UIAlertAction(title: "OK", style: .default, handler: { action in
             
             DispatchQueue.main.async(execute: { 
-                _ = self.navigationController?.popViewController(animated: true)
+                _ = self.navigationController?.popToRootViewController(animated: true)
             })
             
         })
@@ -137,10 +139,64 @@ extension AddVC {
                 self.recipeToSend["recipeImage"] = imageUrl
                 print("Successfuly load image \(imageUrl)")
                 print(self.recipeToSend)
+                self.sendMessageWithProperties(properties: self.recipeToSend)
                 self.present(alertController, animated: true, completion: nil)
             })
         }
 
+        
+    }
+    
+    fileprivate func sendMessageWithProperties(properties: [String: String]) {
+        
+        let ref = FIRDatabase.database().reference().child("posts")
+        let childRef = ref.childByAutoId()
+        let fromId = FIRAuth.auth()?.currentUser?.uid
+        let timeStamp = String(Int(Date().timeIntervalSince1970))
+        
+        
+        var values: [String: AnyObject] = ["fromId": fromId! as AnyObject, "timestamp": timeStamp as AnyObject, "likes" : 0 as AnyObject]
+        
+        //append properties dictionary somehow
+        //key $0, value $1
+        properties.forEach { (key, value) in
+            
+            values[key] = value as AnyObject?
+            print(values)
+            
+        }
+        
+        if recipe != nil {
+            let key = recipe?.recipeId
+            let childUpdates = ref.child(key!)
+            childUpdates.updateChildValues(values, withCompletionBlock: {(error, ref) in
+                
+                if error != nil {
+                    return
+                }
+                
+            })
+            
+        } else {
+            childRef.updateChildValues(values, withCompletionBlock: {(error, ref) in
+                
+                if error != nil {
+                    return
+                }
+                
+                
+                //let userMessagesRef = FIRDatabase.database().reference().child("user-messages").child(fromId!).child(toId)
+                //let messageId = childRef.key
+                //userMessagesRef.updateChildValues([messageId: 1])
+                
+                //let recipientsUserMessagesRef = FIRDatabase.database().reference().child("user-messages").child(toId).child(fromId!)
+                //recipientsUserMessagesRef.updateChildValues([messageId: 1])
+                
+                
+            })
+        }
+        
+        
         
     }
     
@@ -180,6 +236,9 @@ extension AddVC: UICollectionViewDataSource {
         if indexPath.item == 0 {
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: cellImageId, for: indexPath) as! AddImageCell
             cell.addVC = self
+            if recipe != nil {
+                cell.uploadImageView.loadImageUsingCacheWithUrlString(urlString: (recipe?.recipeImage)!)
+            }
             return cell
         } else if indexPath.item == 1 {
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: cellTitleId, for: indexPath) as! AddTitleCell
@@ -189,16 +248,27 @@ extension AddVC: UICollectionViewDataSource {
             cell.timeToCook.tag = 2
             cell.personCount.delegate = self
             cell.personCount.tag = 3
+            if recipe != nil {
+                cell.cellTitle.text = recipe?.title
+                cell.timeToCook.text = recipe?.timeToCook
+                cell.personCount.text = recipe?.personCount
+            }
             return cell
         } else if indexPath.item == 2 {
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: cellIngridientsId, for: indexPath) as! AddIngrideintsCell
             cell.textView.delegate = self
             cell.textView.tag = 1
+            if recipe != nil {
+                cell.textView.text = recipe?.ingridients
+            }
             return cell
         } else {
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: cellInstructionsId, for: indexPath) as! AddInstructionsCell
             cell.textView.delegate = self
             cell.textView.tag = 2
+            if recipe != nil {
+                cell.textView.text = recipe?.instructions
+            }
             return cell
         }
         
@@ -211,7 +281,7 @@ extension AddVC: UITextFieldDelegate {
     func textFieldDidEndEditing(_ textField: UITextField) {
         switch textField.tag {
         case 1:
-            recipeToSend["cellTitle"] = textField.text!
+            recipeToSend["title"] = textField.text!
         case 2:
             recipeToSend["timeToCook"] = textField.text!
         case 3:

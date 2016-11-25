@@ -51,16 +51,17 @@ class MainVC: UIViewController {
         return button
     }()
     
-    let segmentedControl: BetterSegmentedControl = {
+    lazy var segmentedControl: BetterSegmentedControl = {
         let segmented = BetterSegmentedControl()
         segmented.translatesAutoresizingMaskIntoConstraints = false
-        segmented.titles = ["ALL","NEW","TRENDING"]
+        segmented.titles = ["ALL","MY","TRENDING"]
         segmented.titleFont = UIFont(name: "HelveticaNeue", size: 14.0)!
         segmented.selectedTitleFont = UIFont(name: "HelveticaNeue", size: 14.0)!
         segmented.titleColor = UIColor.white
         segmented.backgroundColor = UIColor(red:0.341,  green:0.290,  blue:0.298, alpha:1)
         segmented.indicatorViewBackgroundColor = UIColor(red:0.996,  green:0.306,  blue:0.314, alpha:1)
         segmented.cornerRadius = 5.0
+        segmented.addTarget(self, action: #selector(segmentedControlValueChanged(_:)), for: .valueChanged)
         segmented.alwaysAnnouncesValue = true
         return segmented
     }()
@@ -72,6 +73,8 @@ class MainVC: UIViewController {
     var viewDidAppearProcessed = false
     
     var recipes = [Recipe]()
+    
+    var shownIndexPath = Set<Int>()
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
@@ -117,33 +120,13 @@ class MainVC: UIViewController {
         swipeRight.direction = UISwipeGestureRecognizerDirection.right
         self.view.addGestureRecognizer(swipeRight)
         
+        fetchAllRecipes()
         
-        DataService.ds.REF_POSTS.observe(.value, with: { (snapshot) in
-            
-            if let snapshot = snapshot.children.allObjects as? [FIRDataSnapshot] {
-                self.recipes.removeAll(keepingCapacity: true)
-                for snap in snapshot {
-                    
-                    print("SNAP: \(snap)")
-                    
-                    if let recipeDict = snap.value as? Dictionary<String, AnyObject> {
-                        
-                        let key = snap.key
-                        let recipe = Recipe(recipeKey: key, recipeData: recipeDict)
-                        
-                        self.recipes.append(recipe)
-                        
-                    }
-                    
-                }
-                
-            }
-            
-            DispatchQueue.main.async {
-                self.collectionView.reloadData()
-            }
-            
-        })
+        do {
+            try segmentedControl.set(index: 0, animated: true)
+        } catch {
+            print("Can't")
+        }
         
         
     }
@@ -178,6 +161,116 @@ extension MainVC {
         navigationItem.backBarButtonItem = backItem
         let addVC = AddVC()
         navigationController?.pushViewController(addVC, animated: true)
+    }
+    
+    func segmentedControlValueChanged(_ sender: BetterSegmentedControl) {
+        print("The selected index is \(sender.index) and the title is \(sender.titles[Int(sender.index)])")
+        switch sender.index {
+        case 0:
+            fetchAllRecipes()
+        case 1:
+            fetchByUserRecipes()
+        case 2:
+            fetchByLikesRecipes()
+        default:
+            break
+        }
+
+    }
+    
+    func fetchAllRecipes() {
+        let ref = DataService.ds.REF_POSTS
+        ref.queryOrdered(byChild: "timestamp").observe(.value, with: { (snapshot) in
+            
+            if let snapshot = snapshot.children.allObjects as? [FIRDataSnapshot] {
+                self.recipes.removeAll(keepingCapacity: true)
+                for snap in snapshot {
+                    
+                    print("SNAP: \(snap)")
+                    
+                    if let recipeDict = snap.value as? Dictionary<String, AnyObject> {
+                        
+                        let key = snap.key
+                        let recipe = Recipe(recipeId: key, recipeData: recipeDict)
+                        
+                        self.recipes.append(recipe)
+                        
+                    }
+                    
+                }
+                self.recipes.sort { $0.timestamp > $1.timestamp }
+                
+            }
+            
+            DispatchQueue.main.async {
+                self.collectionView.reloadData()
+            }
+            
+        })
+    }
+    
+    func fetchByUserRecipes() {
+        let fromId = FIRAuth.auth()?.currentUser?.uid
+        let ref = DataService.ds.REF_POSTS
+        ref.queryOrdered(byChild: "fromId").queryEqual(toValue: fromId).observe(.value, with: { (snapshot) in
+            
+            if let snapshot = snapshot.children.allObjects as? [FIRDataSnapshot] {
+                self.recipes.removeAll(keepingCapacity: true)
+                for snap in snapshot {
+                    
+                    print("SNAP: \(snap)")
+                    
+                    if let recipeDict = snap.value as? Dictionary<String, AnyObject> {
+                        
+                        let key = snap.key
+                        let recipe = Recipe(recipeId: key, recipeData: recipeDict)
+                        
+                        self.recipes.append(recipe)
+                        
+                    }
+                    
+                }
+                //self.recipes.sort { $0.timestamp > $1.timestamp }
+                
+            }
+            
+            DispatchQueue.main.async {
+                self.collectionView.reloadData()
+            }
+            
+        })
+    }
+    
+    func fetchByLikesRecipes() {
+        let fromId = FIRAuth.auth()?.currentUser?.uid
+        let ref = DataService.ds.REF_POSTS
+        ref.queryOrdered(byChild: "likes").observe(.value, with: { (snapshot) in
+            
+            if let snapshot = snapshot.children.allObjects as? [FIRDataSnapshot] {
+                self.recipes.removeAll(keepingCapacity: true)
+                for snap in snapshot {
+                    
+                    print("SNAP: \(snap)")
+                    
+                    if let recipeDict = snap.value as? Dictionary<String, AnyObject> {
+                        
+                        let key = snap.key
+                        let recipe = Recipe(recipeId: key, recipeData: recipeDict)
+                        
+                        self.recipes.append(recipe)
+                        
+                    }
+                    
+                }
+                self.recipes.sort { $0.likes > $1.likes }
+                
+            }
+            
+            DispatchQueue.main.async {
+                self.collectionView.reloadData()
+            }
+            
+        })
     }
 }
 
@@ -215,6 +308,24 @@ extension MainVC: UICollectionViewDelegate {
         let controller = DetailVC()
         controller.recipe = recipes[indexPath.item]
         navigationController?.pushViewController(controller, animated: true)
+        
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
+        
+        if !shownIndexPath.contains(indexPath.item) {
+            
+            // Define the initial state (Before the animation)
+            cell.alpha = 0
+            
+            // Define the final state (After the animation)
+            UIView.animate(withDuration: 0.5) {
+                cell.alpha = 1
+            }
+            
+            shownIndexPath.insert(indexPath.item)
+            
+        }
         
     }
     

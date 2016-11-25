@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import Firebase
 
 class DetailVC: UIViewController {
     
@@ -36,6 +37,12 @@ class DetailVC: UIViewController {
         return imageView
     }()
     
+    lazy var editBarButton: UIBarButtonItem = {
+        let button = UIBarButtonItem(title: "Edit", style: .plain, target: self, action: #selector(handleEditButton))
+        button.tintColor = .white
+        return button
+    }()
+    
     let cellImageId = "cellId"
     let cellTitleId = "cellTitleId"
     let cellTextId = "cellTextId"
@@ -44,6 +51,15 @@ class DetailVC: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        let fromId = FIRAuth.auth()?.currentUser?.uid
+        if fromId == recipe?.fromId {
+            
+            navigationItem.rightBarButtonItem = editBarButton
+            
+        }
+        
+        
         
         view.addSubview(imageView)
         view.addSubview(blurView)
@@ -81,6 +97,18 @@ class DetailVC: UIViewController {
     
 }
 
+//Actions
+extension DetailVC {
+    func handleEditButton() {
+        
+        let addVC = AddVC()
+        addVC.recipe = self.recipe
+        navigationController?.pushViewController(addVC, animated: true)
+        
+        
+    }
+}
+
 //UICollectionViewDataSource
 extension DetailVC: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
@@ -91,7 +119,7 @@ extension DetailVC: UICollectionViewDataSource {
         
         if indexPath.item == 0 {
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: cellImageId, for: indexPath) as! DetailImageCell
-            if let imageUrl = recipe?.imageUrl {
+            if let imageUrl = recipe?.recipeImage {
                 cell.imageView.loadImageUsingCacheWithUrlString(urlString: imageUrl)
             }
             return cell
@@ -105,7 +133,7 @@ extension DetailVC: UICollectionViewDataSource {
                 cell.recipeText = recipe?.ingridients
                 cell.titleCellTopView.text = "Ingridients"
             } else {
-                cell.recipeText = recipe?.descriptionSteps
+                cell.recipeText = recipe?.instructions
                 cell.titleCellTopView.text = "Instructions"
 
             }
@@ -141,7 +169,7 @@ extension DetailVC: UICollectionViewDelegateFlowLayout {
             var messageText: String = ""
             if indexPath.item == 2, let text = recipe?.ingridients {
                 messageText = text
-            } else if indexPath.item == 3, let text = recipe?.descriptionSteps {
+            } else if indexPath.item == 3, let text = recipe?.instructions {
                 messageText = text
             }
             

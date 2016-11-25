@@ -23,7 +23,7 @@ class DetailTitleCell: DetailBaseCell {
                 ]
                 cellTitle.attributedText = NSAttributedString(string: title, attributes: attributes)
             }
-            if let timeCook = recipe?.timeCook {
+            if let timeCook = recipe?.timeToCook {
                 timeToCook.text = timeCook
             }
             if let count = recipe?.personCount {
