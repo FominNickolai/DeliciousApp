@@ -43,6 +43,12 @@ class DetailVC: UIViewController {
         return button
     }()
     
+    lazy var deleteBarButton: UIBarButtonItem = {
+        let button = UIBarButtonItem(image: UIImage(named: "delete-button"), style: .plain, target: self, action: #selector(handleDeleteButton))
+        button.tintColor = .white
+        return button
+    }()
+    
     let cellImageId = "cellId"
     let cellTitleId = "cellTitleId"
     let cellTextId = "cellTextId"
@@ -55,7 +61,7 @@ class DetailVC: UIViewController {
         let fromId = FIRAuth.auth()?.currentUser?.uid
         if fromId == recipe?.fromId {
             
-            navigationItem.rightBarButtonItem = editBarButton
+            navigationItem.rightBarButtonItems = [deleteBarButton, editBarButton]
             
         }
         
@@ -106,6 +112,40 @@ extension DetailVC {
         navigationController?.pushViewController(addVC, animated: true)
         
         
+    }
+    
+    func handleDeleteButton() {
+        
+        let alertController = UIAlertController(title: "Deleting", message: "Are you really want to delete this Recipe?", preferredStyle: .alert)
+        let okAction = UIAlertAction(title: "OK", style: .destructive, handler: { action in
+            self.deleteRecipeFromDatabase()
+        })
+        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: { action in
+            
+            
+            
+        })
+        alertController.addAction(okAction)
+        alertController.addAction(cancelAction)
+        
+        present(alertController, animated: true, completion: nil)
+        
+    }
+    
+    func deleteRecipeFromDatabase() {
+        if let recipeId = recipe?.recipeId {
+            FIRDatabase.database().reference().child("posts").child(recipeId).removeValue(completionBlock: { (error, ref) in
+                
+                if error != nil {
+                    print("Failed to delete message")
+                    return
+                }
+                print("Succelssfully deleted")
+                DispatchQueue.main.async(execute: {
+                    self.dismiss(animated: true, completion: nil)
+                })
+            })
+        }
     }
 }
 
