@@ -129,7 +129,6 @@ class MainVC: UIViewController {
         do {
             try segmentedControl.set(index: 0, animated: true)
         } catch {
-            print("Can't")
         }
         
         
@@ -140,10 +139,9 @@ class MainVC: UIViewController {
     }
     
 }
-//Actions
+//MARK: Actions
 extension MainVC {
     func handleMenuButtonPressed() {
-        print("Menu Pressed")
         let menuVC = MenuVC()
         
         menuVC.transitioningDelegate = menuTransitionManager
@@ -153,7 +151,6 @@ extension MainVC {
     }
     
     func handleLogOutButton() {
-        print("Log Out Pressed")
         dismiss(animated: true, completion: nil)
          _ = KeychainWrapper.standard.removeObject(forKey: KEY_UID)
     }
@@ -168,7 +165,6 @@ extension MainVC {
     }
     
     func segmentedControlValueChanged(_ sender: BetterSegmentedControl) {
-        print("The selected index is \(sender.index) and the title is \(sender.titles[Int(sender.index)])")
         switch sender.index {
         case 0:
             fetchAllRecipes()
@@ -179,10 +175,30 @@ extension MainVC {
         default:
             break
         }
-
     }
     
     func fetchAllRecipes() {
+        
+        fetchRecipes(byChild: "timestamp", completion: {
+            self.recipes.sort { $0.timestamp > $1.timestamp }
+        })
+    }
+    
+    func fetchByUserRecipes() {
+        
+        fetchRecipes(byChild: "fromId", completion: {
+            self.recipes.sort { $0.timestamp > $1.timestamp }
+        })
+    }
+    
+    func fetchByLikesRecipes() {
+        
+        fetchRecipes(byChild: "likes", completion: {
+            self.recipes.sort { $0.likes > $1.likes }
+        })
+    }
+    
+    func fetchRecipes(byChild: String, completion: @escaping () -> ()) {
         let ref = DataService.ds.REF_POSTS
         ref.queryOrdered(byChild: "timestamp").observe(.value, with: { (snapshot) in
             
@@ -190,84 +206,16 @@ extension MainVC {
                 self.recipes.removeAll(keepingCapacity: true)
                 for snap in snapshot {
                     
-                    print("SNAP: \(snap)")
-                    
                     if let recipeDict = snap.value as? Dictionary<String, AnyObject> {
                         
                         let key = snap.key
                         let recipe = Recipe(recipeId: key, recipeData: recipeDict)
-                        
                         self.recipes.append(recipe)
                         
                     }
                     
                 }
-                self.recipes.sort { $0.timestamp > $1.timestamp }
-                
-            }
-            
-            DispatchQueue.main.async {
-                self.collectionView.reloadData()
-            }
-            
-        })
-    }
-    
-    func fetchByUserRecipes() {
-        let fromId = FIRAuth.auth()?.currentUser?.uid
-        let ref = DataService.ds.REF_POSTS
-        ref.queryOrdered(byChild: "fromId").queryEqual(toValue: fromId).observe(.value, with: { (snapshot) in
-            
-            if let snapshot = snapshot.children.allObjects as? [FIRDataSnapshot] {
-                self.recipes.removeAll(keepingCapacity: true)
-                for snap in snapshot {
-                    
-                    print("SNAP: \(snap)")
-                    
-                    if let recipeDict = snap.value as? Dictionary<String, AnyObject> {
-                        
-                        let key = snap.key
-                        let recipe = Recipe(recipeId: key, recipeData: recipeDict)
-                        
-                        self.recipes.append(recipe)
-                        
-                    }
-                    
-                }
-                //self.recipes.sort { $0.timestamp > $1.timestamp }
-                
-            }
-            
-            DispatchQueue.main.async {
-                self.collectionView.reloadData()
-            }
-            
-        })
-    }
-    
-    func fetchByLikesRecipes() {
-        let fromId = FIRAuth.auth()?.currentUser?.uid
-        let ref = DataService.ds.REF_POSTS
-        ref.queryOrdered(byChild: "likes").observe(.value, with: { (snapshot) in
-            
-            if let snapshot = snapshot.children.allObjects as? [FIRDataSnapshot] {
-                self.recipes.removeAll(keepingCapacity: true)
-                for snap in snapshot {
-                    
-                    print("SNAP: \(snap)")
-                    
-                    if let recipeDict = snap.value as? Dictionary<String, AnyObject> {
-                        
-                        let key = snap.key
-                        let recipe = Recipe(recipeId: key, recipeData: recipeDict)
-                        
-                        self.recipes.append(recipe)
-                        
-                    }
-                    
-                }
-                self.recipes.sort { $0.likes > $1.likes }
-                
+                completion()
             }
             
             DispatchQueue.main.async {
@@ -279,8 +227,10 @@ extension MainVC {
     
     func fetchUserData() {
         
-        let userId = FIRAuth.auth()?.currentUser?.uid
-        let ref = FIRDatabase.database().reference().child("users").child(userId!)
+        guard let userId = FIRAuth.auth()?.currentUser?.uid else {
+            return
+        }
+        let ref = DataService.ds.REF_USERS.child(userId)
         ref.observeSingleEvent(of: .value, with: {(snapshot) in
             
             guard let dictionary = snapshot.value as? [String: AnyObject] else {
@@ -296,11 +246,10 @@ extension MainVC {
                 user.likedPosts?.append(key)
             }
             self.user = user
-            
         })
     }
 }
-
+//MARK: MenuTransitionManagerDelegate
 extension MainVC: MenuTransitionManagerDelegate {
     
     func dismiss() {
@@ -308,7 +257,7 @@ extension MainVC: MenuTransitionManagerDelegate {
     }
     
 }
-//UICollectionViewDataSource
+//MARK: UICollectionViewDataSource
 extension MainVC: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return recipes.count
@@ -325,7 +274,7 @@ extension MainVC: UICollectionViewDataSource {
     }
 }
 
-//UICollectionViewDelegate
+//MARK: UICollectionViewDelegate
 extension MainVC: UICollectionViewDelegate {
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
@@ -359,7 +308,7 @@ extension MainVC: UICollectionViewDelegate {
     
 }
 
-//UICollectionViewDelegateFlowLayout
+//MARK: UICollectionViewDelegateFlowLayout
 extension MainVC: UICollectionViewDelegateFlowLayout {
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {

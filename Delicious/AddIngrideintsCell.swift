@@ -59,13 +59,11 @@ class AddIngrideintsCell: DetailBaseCell {
         titleCellTopView.leftAnchor.constraint(equalTo: leftAnchor).isActive = true
         titleCellTopView.rightAnchor.constraint(equalTo: rightAnchor).isActive = true
         titleCellTopView.heightAnchor.constraint(equalToConstant: 48).isActive = true
-        
         textView.leftAnchor.constraint(equalTo: leftAnchor, constant: 15).isActive = true
         textView.rightAnchor.constraint(equalTo: rightAnchor, constant: -15).isActive = true
         textView.topAnchor.constraint(equalTo: titleCellTopView.bottomAnchor, constant: 15).isActive = true
         textView.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -15).isActive = true
-    }
-    
+    }    
 }
 
 

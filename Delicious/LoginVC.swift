@@ -158,11 +158,8 @@ class LoginVC: UIViewController {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
-        if let key = KeychainWrapper.standard.string(forKey: KEY_UID) {
-            print(key)
-            print("Already Log IN")
+        if let _ = KeychainWrapper.standard.string(forKey: KEY_UID) {
             presentMainVC()
-            
         }
         
     }
@@ -170,21 +167,18 @@ class LoginVC: UIViewController {
         let controller = MainVC()
         let navController = UINavigationController(rootViewController: controller)
         navController.viewControllers = [controller]
-        present(navController, animated: true, completion: {
-            //
-        })
+        present(navController, animated: true, completion: nil)
     }
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
     }
     
     deinit {
         print("LoginVC deinit")
     }
 }
-//Actions
+//MARK: Actions
 extension LoginVC {
     func handleSignInWithEmail() {
         guard let email = emailTextField.text else {

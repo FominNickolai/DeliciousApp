@@ -57,7 +57,6 @@ class AddImageCell: DetailBaseCell {
         uploadImageView.rightAnchor.constraint(equalTo: rightAnchor).isActive = true
         uploadImageView.topAnchor.constraint(equalTo: topAnchor).isActive = true
         uploadImageView.bottomAnchor.constraint(equalTo: bottomAnchor).isActive = true
-        
         addButtonImage.widthAnchor.constraint(equalTo: widthAnchor, multiplier: 0.7).isActive = true
         addButtonImage.heightAnchor.constraint(equalTo: heightAnchor, multiplier: 0.7).isActive = true
         addButtonImage.centerXAnchor.constraint(equalTo: centerXAnchor).isActive = true

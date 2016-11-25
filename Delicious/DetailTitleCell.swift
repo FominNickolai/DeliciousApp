@@ -105,44 +105,20 @@ class DetailTitleCell: DetailBaseCell {
         
         cellTitle.widthAnchor.constraint(equalTo: widthAnchor).isActive = true
         cellTitle.heightAnchor.constraint(equalToConstant: 48).isActive = true
-        
         clockImage.leftAnchor.constraint(equalTo: leftAnchor, constant: 15).isActive = true
         clockImage.topAnchor.constraint(equalTo: cellTitle.bottomAnchor, constant: 15).isActive = true
         clockImage.widthAnchor.constraint(equalToConstant: 22).isActive = true
         clockImage.heightAnchor.constraint(equalToConstant: 22).isActive = true
-        
         timeToCook.leftAnchor.constraint(equalTo: clockImage.rightAnchor, constant: 20).isActive = true
         timeToCook.centerYAnchor.constraint(equalTo: clockImage.centerYAnchor).isActive = true
-        
         forkImage.leftAnchor.constraint(equalTo: timeToCook.rightAnchor, constant: 20).isActive = true
         forkImage.centerYAnchor.constraint(equalTo: timeToCook.centerYAnchor).isActive = true
-        
         personCount.leftAnchor.constraint(equalTo: forkImage.rightAnchor, constant: 10).isActive = true
         personCount.centerYAnchor.constraint(equalTo: forkImage.centerYAnchor).isActive = true
-        
         isFavoriteButton.rightAnchor.constraint(equalTo: rightAnchor, constant: -15).isActive = true
         isFavoriteButton.centerYAnchor.constraint(equalTo: personCount.centerYAnchor).isActive = true
         isFavoriteButton.widthAnchor.constraint(equalToConstant: 36).isActive = true
         isFavoriteButton.heightAnchor.constraint(equalToConstant: 30).isActive = true
-        
-//        let stackView = UIStackView()
-//        stackView.axis = .horizontal
-//        stackView.distribution = .fillEqually
-//        stackView.alignment = .fill
-//        stackView.spacing = 10
-//        stackView.translatesAutoresizingMaskIntoConstraints = false
-//        
-//        addSubview(stackView)
-//        stackView.addArrangedSubview(instructionsButton)
-//        stackView.addArrangedSubview(ingridientsButton)
-//        
-//        stackView.leftAnchor.constraint(equalTo: leftAnchor, constant: 15).isActive = true
-//        stackView.rightAnchor.constraint(equalTo: rightAnchor, constant: -15).isActive = true
-//        stackView.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -10).isActive = true
-//        instructionsButton.heightAnchor.constraint(equalToConstant: 48).isActive = true
-//        ingridientsButton.heightAnchor.constraint(equalToConstant: 48).isActive = true
-
-        
     }
     
     func handleFavoriteButtonPressed() {

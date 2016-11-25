@@ -78,7 +78,6 @@ class AddTitleCell: DetailBaseCell {
         return textField
     }()
     
-    
     override func setupViews() {
         super.setupViews()
         
@@ -101,26 +100,20 @@ class AddTitleCell: DetailBaseCell {
         cellTitle.rightAnchor.constraint(equalTo: rightAnchor, constant: -15).isActive = true
         cellTitle.topAnchor.constraint(equalTo: topAnchor, constant: 15).isActive = true
         cellTitle.heightAnchor.constraint(equalToConstant: 30).isActive = true
-        
         clockImage.leftAnchor.constraint(equalTo: leftAnchor, constant: 15).isActive = true
         clockImage.topAnchor.constraint(equalTo: cellTitle.bottomAnchor, constant: 15).isActive = true
         clockImage.widthAnchor.constraint(equalToConstant: 22).isActive = true
         clockImage.heightAnchor.constraint(equalToConstant: 22).isActive = true
-        
         timeToCook.leftAnchor.constraint(equalTo: clockImage.rightAnchor, constant: 10).isActive = true
         timeToCook.centerYAnchor.constraint(equalTo: clockImage.centerYAnchor).isActive = true
         timeToCook.heightAnchor.constraint(equalToConstant: 30).isActive = true
         timeToCook.widthAnchor.constraint(equalTo: widthAnchor, multiplier: 0.35)
 .isActive = true
-        
         personCount.rightAnchor.constraint(equalTo: rightAnchor, constant: -15).isActive = true
         personCount.centerYAnchor.constraint(equalTo: clockImage.centerYAnchor).isActive = true
         personCount.heightAnchor.constraint(equalToConstant: 30).isActive = true
         personCount.widthAnchor.constraint(equalTo: widthAnchor, multiplier: 0.35).isActive = true
-        
         forkImage.rightAnchor.constraint(equalTo: personCount.leftAnchor, constant: -10).isActive = true
         forkImage.centerYAnchor.constraint(equalTo: clockImage.centerYAnchor).isActive = true
-        
-        
     }
 }

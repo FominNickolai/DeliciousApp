@@ -12,7 +12,6 @@ let imageCache = NSCache<NSString, UIImage>()
 
 extension Array where Element: Equatable {
     
-    // Remove first collection element that is equal to the given `object`:
     mutating func remove(object: Element) {
         if let index = index(of: object) {
             remove(at: index)
@@ -70,19 +69,14 @@ extension UIImageView {
         //otherwise fire off a new download
         let url = URL(string: urlString)
         URLSession.shared.dataTask(with: url!, completionHandler: { (data, response, error) in
-            //download hit an error
             if error != nil {
                 return
             }
-            
             DispatchQueue.main.async(execute: {
                 if let downloadedImage = UIImage(data: data!) {
                     imageCache.setObject(downloadedImage, forKey: urlString as NSString)
                     self.image = downloadedImage
                 }
-                
-                
-                
             })
             
         }).resume()

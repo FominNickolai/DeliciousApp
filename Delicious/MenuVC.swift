@@ -11,6 +11,11 @@ import SwiftKeychainWrapper
 
 class MenuVC: UIViewController {
     
+    enum MenuItems: String {
+        case NewRecipe = "New Recipes"
+        case Exit = "Exit"
+    }
+    
     weak var mainVC: MainVC?
     
     lazy var tableView: UITableView = {
@@ -23,7 +28,7 @@ class MenuVC: UIViewController {
     
     let cellId = "cellId"
     
-    var menuItems = ["Main Menu", "Favorites", "Shopping List", "Recomendations", "New Recipes", "Exit"]
+    var menuItems = [MenuItems.NewRecipe, MenuItems.Exit]
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -34,8 +39,9 @@ class MenuVC: UIViewController {
         tableView.leftAnchor.constraint(equalTo: view.leftAnchor).isActive = true
         tableView.rightAnchor.constraint(equalTo: view.rightAnchor).isActive = true
         
-        let backgroundImage = #imageLiteral(resourceName: "Background")
+        let backgroundImage = UIImage(named: "Background")
         let imageView = UIImageView(image: backgroundImage)
+        imageView.contentMode = .scaleAspectFill
         
         tableView.backgroundView = imageView
         tableView.estimatedRowHeight = 45
@@ -51,40 +57,33 @@ class MenuVC: UIViewController {
     }
     
 }
-
+//MARK: UITableViewDataSource
 extension MenuVC: UITableViewDataSource {
     func numberOfSections(in tableView: UITableView) -> Int {
-        // #warning Incomplete implementation, return the number of sections
         return 1
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        // #warning Incomplete implementation, return the number of rows
         return menuItems.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: cellId, for: indexPath) as! MenuCell
         
-        // Configure the cell...
-        cell.menuItem = menuItems[indexPath.row]
+        cell.menuItem = menuItems[indexPath.row].rawValue
         
         return cell
     }
 }
-
+//MARK: UITableViewDelegate
 extension MenuVC: UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        switch indexPath.item {
-        case 0:
-            dismiss(animated: true, completion: nil)
-        case 4:
+        switch menuItems[indexPath.item] {
+        case .NewRecipe:
             mainVC?.showAddVC()
-        case 5:
+        case .Exit:
             mainVC?.handleLogOutButton()
-        default:
-            break
         }
     }
     

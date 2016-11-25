@@ -31,8 +31,6 @@ class MainCell: UICollectionViewCell {
             if let likes = recipe?.likes {
                 likesCountLabel.text = String(likes)
             }
-            
-            
         }
     }
     
@@ -125,13 +123,9 @@ class MainCell: UICollectionViewCell {
         cellTitle.leftAnchor.constraint(equalTo: blurView.leftAnchor, constant: 10).isActive = true
         cellTitle.rightAnchor.constraint(equalTo: likesCountLabel.leftAnchor, constant: -10).isActive = true
         cellTitle.centerYAnchor.constraint(equalTo: blurView.centerYAnchor).isActive = true
-        
-        
     }
     
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
-    
 }

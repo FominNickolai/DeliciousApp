@@ -36,30 +36,21 @@ class  LoginService {
         let credentials = FIRFacebookAuthProvider.credential(withAccessToken: accessTokenString)
         FIRAuth.auth()?.signIn(with: credentials, completion: { (user, error) in
             if error != nil {
-                
-                print("Something went wrong with our FB user")
                 return
-                
             }
             let userData = ["provider": credentials.provider, "name": user?.displayName]
             guard let userToWrite = user else {
                 return
             }
             self.completeSignIn(id: userToWrite.uid, userData: userData as! Dictionary<String, String>)
-            print("Successfully logged in with our user")
         })
         
         FBSDKGraphRequest(graphPath: "/me", parameters: ["fields": "id, name, email"]).start { (connection, result, error) in
             
             if error != nil {
-                print("Failed to start grab request")
                 return
             }
-            
-            print(result ?? "")
-            
         }
-        
     }
     
     func loginWithEmailAndPassword(email: String, password: String, completion: @escaping () -> ()) {
@@ -68,24 +59,18 @@ class  LoginService {
             
             if error == nil {
                 
-                print("NICK: Email user authenticated Successfully with Firebase")
-                
                 if let user = user {
                     
                     let userData = ["provider" : user.providerID]
                     self.completeSignIn(id: user.uid, userData: userData)
                     completion()
-                    
                 }
                 
             } else {
                 
                 FIRAuth.auth()?.createUser(withEmail: email, password: password, completion: { (user, error) in
                     if error != nil {
-                        print("NICK: Unable to authenticate with Firebase using email")
                     } else {
-                        print("NICK: Successfully created user in Firebase")
-                        
                         if let user = user {
                             let userData = ["provider" : user.providerID]
                             self.completeSignIn(id: user.uid, userData: userData)
@@ -93,11 +78,8 @@ class  LoginService {
                         }
                     }
                 })
-                
             }
-            
         })
-
     }
     
     private func completeSignIn(id: String, userData: Dictionary<String, String>) {
@@ -107,9 +89,5 @@ class  LoginService {
         DispatchQueue.main.async {
             _ = KeychainWrapper.standard.set(id, forKey: KEY_UID)
         }
-        
-        
-        
-        print("NICK: Data saved to keychain successfully")
     }
 }

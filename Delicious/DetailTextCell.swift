@@ -21,7 +21,6 @@ class DetailTextCell: DetailBaseCell {
     let textView: UITextView = {
         let tv = UITextView()
         tv.font = UIFont(name: "HelveticaNeue-Light", size: 16)
-        tv.text = "1. Blend the ingredients for pesto in a processor and keep aside."
         tv.backgroundColor = .clear
         tv.textColor = .white
         tv.translatesAutoresizingMaskIntoConstraints = false
@@ -32,7 +31,6 @@ class DetailTextCell: DetailBaseCell {
     
     let titleCellTopView: UILabel = {
         let label = UILabel()
-        label.text = "Ingridients"
         label.textColor = .white
         label.font = UIFont(name: "HelveticaNeue-Light", size: 18)
         label.backgroundColor = UIColor(red:1,  green:0.404,  blue:0.384, alpha:1)
@@ -60,7 +58,6 @@ class DetailTextCell: DetailBaseCell {
         titleCellTopView.leftAnchor.constraint(equalTo: leftAnchor).isActive = true
         titleCellTopView.rightAnchor.constraint(equalTo: rightAnchor).isActive = true
         titleCellTopView.heightAnchor.constraint(equalToConstant: 48).isActive = true
-        
         textView.leftAnchor.constraint(equalTo: leftAnchor, constant: 15).isActive = true
         textView.rightAnchor.constraint(equalTo: rightAnchor, constant: -15).isActive = true
         textView.topAnchor.constraint(equalTo: titleCellTopView.bottomAnchor, constant: 15).isActive = true

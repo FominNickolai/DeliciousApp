@@ -13,7 +13,6 @@ class DetailVC: UIViewController {
     
     lazy var collectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
-//        layout.headerReferenceSize = CGSize(width: self.view.frame.width, height: 200)
         let collectionView = UICollectionView(frame: self.view.frame, collectionViewLayout: layout)
         collectionView.translatesAutoresizingMaskIntoConstraints = false
         collectionView.delegate = self
@@ -61,28 +60,21 @@ class DetailVC: UIViewController {
         
         let fromId = FIRAuth.auth()?.currentUser?.uid
         if fromId == recipe?.fromId {
-            
             navigationItem.rightBarButtonItems = [deleteBarButton, editBarButton]
-            
         }
-        
-        
         
         view.addSubview(imageView)
         view.addSubview(blurView)
-        
         view.addSubview(collectionView)
         
         imageView.widthAnchor.constraint(equalTo: view.widthAnchor).isActive = true
         imageView.heightAnchor.constraint(equalTo: view.heightAnchor).isActive = true
         blurView.widthAnchor.constraint(equalTo: view.widthAnchor).isActive = true
         blurView.heightAnchor.constraint(equalTo: view.heightAnchor).isActive = true
- 
         collectionView.leftAnchor.constraint(equalTo: view.leftAnchor).isActive = true
         collectionView.rightAnchor.constraint(equalTo: view.rightAnchor).isActive = true
         collectionView.topAnchor.constraint(equalTo: view.topAnchor).isActive = true
         collectionView.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
-        
         collectionView.backgroundColor = .clear
         collectionView.register(DetailImageCell.self, forCellWithReuseIdentifier: cellImageId)
         collectionView.register(DetailTitleCell.self, forCellWithReuseIdentifier: cellTitleId)
@@ -104,44 +96,32 @@ class DetailVC: UIViewController {
     
 }
 
-//Actions
+//MARK: Actions
 extension DetailVC {
+    
     func handleEditButton() {
-        
         let addVC = AddVC()
         addVC.recipe = self.recipe
         navigationController?.pushViewController(addVC, animated: true)
-        
-        
     }
     
     func handleDeleteButton() {
-        
-        let alertController = UIAlertController(title: "Deleting", message: "Are you really want to delete this Recipe?", preferredStyle: .alert)
+        let alertController = UIAlertController(title: "Delete", message: "Are you sure you want to delete this Recipe?", preferredStyle: .alert)
         let okAction = UIAlertAction(title: "OK", style: .destructive, handler: { action in
             self.deleteRecipeFromDatabase()
         })
-        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: { action in
-            
-            
-            
-        })
+        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
         alertController.addAction(okAction)
         alertController.addAction(cancelAction)
-        
         present(alertController, animated: true, completion: nil)
-        
     }
     
     func deleteRecipeFromDatabase() {
         if let recipeId = recipe?.recipeId {
-            FIRDatabase.database().reference().child("posts").child(recipeId).removeValue(completionBlock: { (error, ref) in
-                
+            DataService.ds.REF_POSTS.child(recipeId).removeValue(completionBlock: { (error, ref) in
                 if error != nil {
-                    print("Failed to delete message")
                     return
                 }
-                print("Succelssfully deleted")
                 DispatchQueue.main.async(execute: {
                     self.dismiss(animated: true, completion: nil)
                 })
@@ -151,23 +131,21 @@ extension DetailVC {
     
     func changeLikesValue() {
         
-        
-        //let currentLikesCount = recipe?.likes
-        let refUsers = FIRDatabase.database().reference().child("users")
-        let userId = FIRAuth.auth()?.currentUser?.uid
-        let userRef = refUsers.child(userId!)
+        guard let userId = FIRAuth.auth()?.currentUser?.uid else {
+            return
+        }
         guard let key = recipe?.recipeId else {
             return
         }
-        
-        let refPosts = FIRDatabase.database().reference().child("posts")
-        let refPostLikesUpdate = refPosts.child(key)
+        let userRef = DataService.ds.REF_USERS.child(userId)
+       
+        print(userId)
+        print(key)
         
         if checkIfLiked() {
             userRef.child("likedPosts").child(key).removeValue(completionBlock: { (error, ref) in
                 
                 if error != nil {
-                    print("Failed to delete message")
                     return
                 }
                 
@@ -220,7 +198,7 @@ extension DetailVC {
     
 }
 
-//UICollectionViewDataSource
+//MARK: UICollectionViewDataSource
 extension DetailVC: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return 4
@@ -262,17 +240,7 @@ extension DetailVC: UICollectionViewDataSource {
     }
 }
 
-//UICollectionViewDelegate
-extension DetailVC: UICollectionViewDelegate {
-    
-    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        
-        
-    }
-    
-}
-
-//UICollectionViewDelegateFlowLayout
+//MARK: UICollectionViewDelegateFlowLayout
 extension DetailVC: UICollectionViewDelegateFlowLayout {
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
@@ -293,7 +261,6 @@ extension DetailVC: UICollectionViewDelegateFlowLayout {
             
             height = estimateFrameForText(text: messageText).height + 100
         }
-        print(height)
         return CGSize(width: view.frame.width - 20, height: height)
         
     }
