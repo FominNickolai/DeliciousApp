@@ -19,9 +19,10 @@ class Recipe {
     private var _ingridients: String!
     private var _fromId: String!
     private var _recipeId: String!
-    private var _likes: Int!
     private var _recipeRef: FIRDatabaseReference!
     private var _timestamp: String!
+    private var _imageNameInStorage: String!
+    var likedPosts: [String] = []
     
     var title: String {
         return _title
@@ -47,10 +48,6 @@ class Recipe {
         return _ingridients
     }
     
-    var likes: Int {
-        return _likes
-    }
-    
     var fromId: String {
         return _fromId
     }
@@ -63,12 +60,8 @@ class Recipe {
         return _recipeId
     }
     
-    init(title: String, recipeImage: String, likes: Int) {
-        
-        self._title = title
-        self._recipeImage = recipeImage
-        self._likes = likes
-        
+    var imageNameInStorage: String {
+        return _imageNameInStorage
     }
     
     init(recipeId: String, recipeData: Dictionary<String, AnyObject>) {
@@ -103,30 +96,43 @@ class Recipe {
             self._timestamp = timestamp
         }
         
-        if let likes = recipeData["likes"] as? Int {
-            self._likes = likes
-        }
-        
         if let fromId = recipeData["fromId"] as? String {
             self._fromId = fromId
+        }
+        
+        if let imageNameInStorage = recipeData["imageNameInStorage"] as? String {
+            self._imageNameInStorage = imageNameInStorage
+        }
+                
+        if let likedPostsDict = recipeData["likedPosts"] as? [String:Int] {
+            for (key, _) in likedPostsDict {
+                self.likedPosts.append(key)
+            }
         }
         
         _recipeRef = DataService.ds.REF_POSTS.child(_recipeId)
     }
     
-    func adjustLikes(addLike: Bool) {
-        
+    func adjustLikes(addLike: Bool, completion: @escaping () -> ()) {
+        guard let userId = FIRAuth.auth()?.currentUser?.uid else {
+            return
+        }
         if addLike {
-            
-            _likes = _likes + 1
+            _recipeRef.child("likedPosts").updateChildValues([userId: 1], withCompletionBlock: { (error, ref) in
+                if error != nil {
+                    return
+                }
+                self.likedPosts.append(userId)
+                completion()
+            })
             
         } else {
-            
-            _likes = _likes - 1
-            
+            _recipeRef.child("likedPosts").child(userId).removeValue(completionBlock: { (error, ref) in
+                self.likedPosts.remove(object: userId)
+                completion()
+            })
         }
         
-        _recipeRef.child("likes").setValue(_likes)
     }
     
 }

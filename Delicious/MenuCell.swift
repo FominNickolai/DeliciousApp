@@ -20,6 +20,7 @@ class MenuCell: UITableViewCell {
         super.init(style: .default, reuseIdentifier: reuseIdentifier)
         self.backgroundColor = .clear
         self.textLabel?.textColor = .white
+        self.textLabel?.font = UIFont(name: "HelveticaNeue-Light", size: 18)
     }
     
     required init?(coder aDecoder: NSCoder) {

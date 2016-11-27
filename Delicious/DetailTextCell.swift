@@ -10,6 +10,24 @@ import UIKit
 
 class DetailTextCell: DetailBaseCell {
     
+    var isIngridients: Bool? {
+        didSet {
+            let shadow = NSShadow()
+            shadow.shadowOffset = CGSize(width: 1, height: 1)
+            shadow.shadowColor = UIColor.black
+            let attributes = [
+                NSShadowAttributeName : shadow,
+                NSForegroundColorAttributeName : UIColor.white,
+                NSFontAttributeName: UIFont(name: "HelveticaNeue-Light", size: 18)
+            ]
+            if isIngridients! {
+                titleCellTopView.attributedText = NSAttributedString(string: "Ingridients", attributes: attributes)
+            } else {
+                titleCellTopView.attributedText = NSAttributedString(string: "Instructions", attributes: attributes)
+            }
+        }
+    }
+    
     var recipeText: String? {
         didSet {
             if let text = recipeText {
@@ -31,8 +49,6 @@ class DetailTextCell: DetailBaseCell {
     
     let titleCellTopView: UILabel = {
         let label = UILabel()
-        label.textColor = .white
-        label.font = UIFont(name: "HelveticaNeue-Light", size: 18)
         label.backgroundColor = UIColor(red:1,  green:0.404,  blue:0.384, alpha:1)
         label.translatesAutoresizingMaskIntoConstraints = false
         label.textAlignment = .center

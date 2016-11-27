@@ -48,12 +48,17 @@ class DetailVC: UIViewController {
         return button
     }()
     
+    
     let cellImageId = "cellId"
     let cellTitleId = "cellTitleId"
     let cellTextId = "cellTextId"
     
     var recipe: Recipe?
     var user: User?
+    
+    var startingFrame: CGRect?
+    var blackBackground: UIView?
+    var startingImageView: UIImageView?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -81,7 +86,7 @@ class DetailVC: UIViewController {
         collectionView.register(DetailTextCell.self, forCellWithReuseIdentifier: cellTextId)
     }
     
-    fileprivate func estimateFrameForText(text: String) -> CGRect {
+    func estimateFrameForText(text: String) -> CGRect {
         
         let size = CGSize(width: UIScreen.main.bounds.width - 60, height: 1000)
         let options = NSStringDrawingOptions.usesFontLeading.union(.usesLineFragmentOrigin)
@@ -91,7 +96,6 @@ class DetailVC: UIViewController {
     }
     
     deinit {
-        print("DetailVC Deinit")
     }
     
 }
@@ -117,83 +121,126 @@ extension DetailVC {
     }
     
     func deleteRecipeFromDatabase() {
-        if let recipeId = recipe?.recipeId {
-            DataService.ds.REF_POSTS.child(recipeId).removeValue(completionBlock: { (error, ref) in
+        if let recipeImageName = recipe?.imageNameInStorage {
+            DataService.ds.REF_POST_IMAGES.child(recipeImageName).delete(completion: { (error) in
                 if error != nil {
                     return
                 }
-                DispatchQueue.main.async(execute: {
-                    self.dismiss(animated: true, completion: nil)
-                })
+                
+                if let recipeId = self.recipe?.recipeId {
+                    DataService.ds.REF_POSTS.child(recipeId).removeValue(completionBlock: { (error, ref) in
+                        if error != nil {
+                            return
+                        }
+                        
+                        DispatchQueue.main.async(execute: {
+                            let alertController = UIAlertController(title: "Success", message: "You have successfully deleted this recipe", preferredStyle: .alert)
+                            let okAction = UIAlertAction(title: "OK", style: .destructive, handler: { action in
+                                _ = self.navigationController?.popToRootViewController(animated: true)
+                            })
+                            alertController.addAction(okAction)
+                            self.present(alertController, animated: true, completion: nil)
+                            
+                        })
+                    })
+                    
+                }
+                
             })
         }
+        
     }
     
     func changeLikesValue() {
-        
-        guard let userId = FIRAuth.auth()?.currentUser?.uid else {
-            return
-        }
-        guard let key = recipe?.recipeId else {
-            return
-        }
-        let userRef = DataService.ds.REF_USERS.child(userId)
-       
-        print(userId)
-        print(key)
-        
+               
         if checkIfLiked() {
-            userRef.child("likedPosts").child(key).removeValue(completionBlock: { (error, ref) in
-                
-                if error != nil {
-                    return
-                }
-                
-                self.user?.likedPosts?.remove(object: key)
-                self.recipe?.adjustLikes(addLike: false)
+            self.recipe?.adjustLikes(addLike: false, completion: { 
                 let indexPath = IndexPath(item: 1, section: 0)
                 let cell = self.collectionView.cellForItem(at: indexPath) as! DetailTitleCell
                 DispatchQueue.main.async(execute: {
                     cell.isFavoriteButton.setImage(UIImage(named: "inactive_heart"), for: .normal)
                 })
             })
-            
-      
         } else {
-            
-            let values: [String: AnyObject] = [key: 1 as AnyObject]
-            userRef.child("likedPosts").updateChildValues(values, withCompletionBlock: {(error, ref) in
-                
-                if error != nil {
-                    return
-                }
-                
-                self.user?.likedPosts?.append(key)
-                self.recipe?.adjustLikes(addLike: true)
+            self.recipe?.adjustLikes(addLike: true, completion: { 
                 let indexPath = IndexPath(item: 1, section: 0)
                 let cell = self.collectionView.cellForItem(at: indexPath) as! DetailTitleCell
                 DispatchQueue.main.async(execute: {
                     cell.isFavoriteButton.setImage(UIImage(named: "active_heart"), for: .normal)
                 })
-                
             })
-            
-            
         }
     }
     
     func checkIfLiked() -> Bool {
-        guard let key = recipe?.recipeId else {
+        guard let userId = FIRAuth.auth()?.currentUser?.uid else {
             return false
         }
-        guard let user = self.user else {
+        guard let isLiked = recipe?.likedPosts.contains(userId) else {
             return false
         }
-        guard let isLiked = user.likedPosts?.contains(key) else {
-            return false
+        return isLiked
+    }
+    
+    
+    //My custom zooming logic
+    func performZoomInForStartindImageView(startingImageView: UIImageView) {
+        
+        self.startingImageView = startingImageView
+        self.startingImageView?.isHidden = true
+        
+        startingFrame = startingImageView.superview?.convert(startingImageView.frame, to: nil)
+        
+        let zoomingImageView = UIImageView(frame: startingFrame!)
+        zoomingImageView.contentMode = .scaleAspectFill
+        zoomingImageView.image = startingImageView.image
+        zoomingImageView.isUserInteractionEnabled = true
+        zoomingImageView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(handleZoomOut)))
+        
+        if let keyWindow =  UIApplication.shared.keyWindow {
+            
+            blackBackground = UIView(frame: keyWindow.frame)
+            blackBackground?.backgroundColor = .black
+            blackBackground?.alpha = 0
+            keyWindow.addSubview(blackBackground!)
+            
+            keyWindow.addSubview(zoomingImageView)
+            
+            UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseOut, animations: {
+                
+                self.blackBackground?.alpha = 1
+
+                let height = self.startingFrame!.height / self.startingFrame!.width * keyWindow.frame.width
+                
+                zoomingImageView.frame = CGRect(x: 0, y: 0, width: keyWindow.frame.width, height: height)
+                zoomingImageView.center = keyWindow.center
+                
+            }, completion: nil)
         }
         
-        return isLiked
+        
+    }
+    
+    func handleZoomOut(tapGesture: UITapGestureRecognizer) {
+        
+        if let zoomOutImageView = tapGesture.view {
+            zoomOutImageView.layer.cornerRadius = 8
+            zoomOutImageView.clipsToBounds = true
+            //animate back
+            UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseOut, animations: {
+                
+                zoomOutImageView.frame = self.startingFrame!
+                self.blackBackground?.alpha = 0
+                
+            }, completion: { (completed) in
+                
+                zoomOutImageView.removeFromSuperview()
+                self.startingImageView?.isHidden = false
+                
+            })
+            
+        }
+        
     }
     
 }
@@ -208,8 +255,13 @@ extension DetailVC: UICollectionViewDataSource {
         
         if indexPath.item == 0 {
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: cellImageId, for: indexPath) as! DetailImageCell
+            cell.detailVC = self
             if let imageUrl = recipe?.recipeImage {
-                cell.imageView.loadImageUsingCacheWithUrlString(urlString: imageUrl)
+                cell.imageView.loadImageUsingCacheWithUrlString(urlString: imageUrl, completion: {
+                
+                    cell.activityIndicator.stopAnimating()
+                
+                })
             }
             return cell
         } else if indexPath.item == 1 {
@@ -227,10 +279,10 @@ extension DetailVC: UICollectionViewDataSource {
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: cellTextId, for: indexPath) as! DetailTextCell
             if indexPath.item == 2 {
                 cell.recipeText = recipe?.ingridients
-                cell.titleCellTopView.text = "Ingridients"
+                cell.isIngridients = true
             } else {
                 cell.recipeText = recipe?.instructions
-                cell.titleCellTopView.text = "Instructions"
+                cell.isIngridients = false
 
             }
 

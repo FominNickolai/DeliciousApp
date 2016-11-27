@@ -1,17 +1,16 @@
 //
-//  ViewController.swift
+//  RegisterVC.swift
 //  Delicious
 //
-//  Created by Fomin Nickolai on 11/21/16.
+//  Created by Fomin Nickolai on 11/26/16.
 //  Copyright © 2016 Fomin Nickolai. All rights reserved.
 //
 
 import UIKit
-import FBSDKLoginKit
 import Firebase
 import SwiftKeychainWrapper
 
-class LoginVC: UIViewController {
+class RegisterVC: UIViewController {
     
     let backgroundImageView: UIImageView = {
         let imageView = UIImageView()
@@ -43,6 +42,19 @@ class LoginVC: UIViewController {
         return label
     }()
     
+    let nickNameTextField: UITextField = {
+        let tf = UITextField()
+        tf.attributedPlaceholder = NSAttributedString(string: "Nickname", attributes: [NSForegroundColorAttributeName: UIColor.white])
+        tf.font = UIFont(name: "HelveticaNeue", size: 16)
+        tf.textColor = .white
+        tf.layer.cornerRadius = 27
+        tf.layer.masksToBounds = true
+        tf.backgroundColor = UIColor(red:0,  green:0,  blue:0, alpha:0.4)
+        tf.heightAnchor.constraint(equalToConstant: 55).isActive = true
+        tf.textAlignment = .center
+        return tf
+    }()
+    
     let emailTextField: UITextField = {
         let tf = UITextField()
         tf.attributedPlaceholder = NSAttributedString(string: "Email", attributes: [NSForegroundColorAttributeName: UIColor.white])
@@ -63,8 +75,8 @@ class LoginVC: UIViewController {
         tf.isSecureTextEntry = true
         tf.font = UIFont(name: "HelveticaNeue", size: 16)
         tf.textColor = .white
-        tf.clearsOnBeginEditing = true
         tf.layer.cornerRadius = 27
+        tf.clearsOnBeginEditing = true
         tf.layer.masksToBounds = true
         tf.backgroundColor = UIColor(red:0,  green:0,  blue:0, alpha:0.4)
         tf.heightAnchor.constraint(equalToConstant: 55).isActive = true
@@ -72,68 +84,30 @@ class LoginVC: UIViewController {
         return tf
     }()
     
-    lazy var signInWithEmailButton: UIButton = {
+    lazy var registerWithEmailButton: UIButton = {
         let button = UIButton(type: .system)
-        button.setTitle("Sign In", for: .normal)
+        button.setTitle("Register", for: .normal)
         button.setTitleColor(.white, for: .normal)
         button.titleLabel?.font = UIFont(name: "HelveticaNeue", size: 20)
         button.heightAnchor.constraint(equalToConstant: 55).isActive = true
         button.layer.cornerRadius = 27
         button.layer.masksToBounds = true
         button.backgroundColor = UIColor(red:1,  green:0.404,  blue:0.384, alpha:1)
-        button.addTarget(self, action: #selector(handleSignInWithEmail), for: .touchUpInside)
+        button.addTarget(self, action: #selector(handleRegisterWithEmail), for: .touchUpInside)
         return button
     }()
     
-    lazy var signInWithFacebookButton: UIButton = {
-        let button = UIButton(type: .system)
-        button.setTitle("Sign In with Facebook", for: .normal)
-        button.setTitleColor(.white, for: .normal)
-        button.titleLabel?.font = UIFont(name: "HelveticaNeue", size: 20)
-        button.heightAnchor.constraint(equalToConstant: 55).isActive = true
-        button.layer.cornerRadius = 27
-        button.layer.masksToBounds = true
-        button.backgroundColor = UIColor(red:0.294,  green:0.431,  blue:0.659, alpha:1)
-        button.addTarget(self, action: #selector(handleSignInWithFacebook), for: .touchUpInside)
-        return button
-    }()
-    
-    lazy var registerButton: UIButton = {
-        let button = UIButton(type: .system)
-        let shadow = NSShadow()
-        shadow.shadowOffset = CGSize(width: -1, height: 0)
-        shadow.shadowColor = UIColor.black
-        let attributes = [
-            NSShadowAttributeName : shadow,
-            NSForegroundColorAttributeName : UIColor.white,
-            NSFontAttributeName: UIFont(name: "HelveticaNeue", size: 16)
-        ]
-        let attributedText = NSAttributedString(string: "Create an Account", attributes: attributes)
-        button.setAttributedTitle(attributedText, for: .normal)
-        button.contentHorizontalAlignment = .left
-        button.addTarget(self, action: #selector(handleRegisterButton), for: .touchUpInside)
-        return button
-    }()
-    
-    lazy var helpButton: UIButton = {
-        let button = UIButton(type: .system)
-        let shadow = NSShadow()
-        shadow.shadowOffset = CGSize(width: -1, height: 0)
-        shadow.shadowColor = UIColor.black
-        let attributes = [
-            NSShadowAttributeName : shadow,
-            NSForegroundColorAttributeName : UIColor.white,
-            NSFontAttributeName: UIFont(name: "HelveticaNeue", size: 16)
-        ]
-        let attributedText = NSAttributedString(string: "Need Help?", attributes: attributes)
-        button.setAttributedTitle(attributedText, for: .normal)
-        button.contentHorizontalAlignment = .right
-        button.addTarget(self, action: #selector(handleResetPasswordButton), for: .touchUpInside)
+    lazy var backButton: UIButton = {
+        let button = UIButton(type: .custom)
+        button.setImage(UIImage(named: "cancel"), for: .normal)
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.addTarget(self, action: #selector(handleBackButton), for: .touchUpInside)
         return button
     }()
     
     var bottomConstraint: NSLayoutConstraint?
 
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -146,6 +120,7 @@ class LoginVC: UIViewController {
         
         view.addSubview(backgroundImageView)
         view.addSubview(containerView)
+        view.addSubview(backButton)
         
         backgroundImageView.leftAnchor.constraint(equalTo: view.leftAnchor).isActive = true
         backgroundImageView.rightAnchor.constraint(equalTo: view.rightAnchor).isActive = true
@@ -164,7 +139,7 @@ class LoginVC: UIViewController {
         mainStackView.axis = .vertical
         mainStackView.distribution = .equalSpacing
         mainStackView.alignment = .center
-        mainStackView.spacing = 35
+        mainStackView.spacing = 55
         mainStackView.translatesAutoresizingMaskIntoConstraints = false
         
         let stackView = UIStackView()
@@ -174,26 +149,15 @@ class LoginVC: UIViewController {
         stackView.spacing = 22
         stackView.translatesAutoresizingMaskIntoConstraints = false
         
-        let stackHorizontalView = UIStackView()
-        stackHorizontalView.axis = .horizontal
-        stackHorizontalView.distribution = .fillEqually
-        stackHorizontalView.alignment = .center
-        stackHorizontalView.spacing = 0
-        stackHorizontalView.translatesAutoresizingMaskIntoConstraints = false
-        
         containerView.addSubview(mainStackView)
-        containerView.addSubview(stackHorizontalView)
         
+        stackView.addArrangedSubview(nickNameTextField)
         stackView.addArrangedSubview(emailTextField)
         stackView.addArrangedSubview(passwordTextField)
-        stackView.addArrangedSubview(signInWithEmailButton)
-        stackView.addArrangedSubview(signInWithFacebookButton)
+        stackView.addArrangedSubview(registerWithEmailButton)
         
         mainStackView.addArrangedSubview(titleLabel)
         mainStackView.addArrangedSubview(stackView)
-        
-        stackHorizontalView.addArrangedSubview(registerButton)
-        stackHorizontalView.addArrangedSubview(helpButton)
         
         mainStackView.centerXAnchor.constraint(equalTo: containerView.centerXAnchor).isActive = true
         mainStackView.centerYAnchor.constraint(equalTo: containerView.centerYAnchor).isActive = true
@@ -203,55 +167,26 @@ class LoginVC: UIViewController {
         stackView.leftAnchor.constraint(equalTo: mainStackView.leftAnchor).isActive = true
         stackView.rightAnchor.constraint(equalTo: mainStackView.rightAnchor).isActive = true
         
-        stackHorizontalView.leftAnchor.constraint(equalTo: containerView.leftAnchor).isActive = true
-        stackHorizontalView.rightAnchor.constraint(equalTo: containerView.rightAnchor).isActive = true
-        stackHorizontalView.topAnchor.constraint(equalTo: mainStackView.bottomAnchor, constant: 30).isActive = true
-        stackHorizontalView.bottomAnchor.constraint(equalTo: containerView.bottomAnchor).isActive = true
-        
         titleLabel.widthAnchor.constraint(equalTo: mainStackView.widthAnchor).isActive = true
+        nickNameTextField.widthAnchor.constraint(equalTo: stackView.widthAnchor).isActive = true
         emailTextField.widthAnchor.constraint(equalTo: stackView.widthAnchor).isActive = true
         passwordTextField.widthAnchor.constraint(equalTo: stackView.widthAnchor).isActive = true
-        signInWithEmailButton.widthAnchor.constraint(equalTo: stackView.widthAnchor).isActive = true
-        signInWithFacebookButton.widthAnchor.constraint(equalTo: stackView.widthAnchor).isActive = true   
+        registerWithEmailButton.widthAnchor.constraint(equalTo: stackView.widthAnchor).isActive = true
+        backButton.widthAnchor.constraint(equalToConstant: 31).isActive = true
+        backButton.heightAnchor.constraint(equalToConstant: 31).isActive = true
+        backButton.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -20).isActive = true
+        backButton.topAnchor.constraint(equalTo: view.topAnchor, constant: 30).isActive = true
         
-    }
-    
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-        
-        if let _ = KeychainWrapper.standard.string(forKey: KEY_UID) {
-            presentMainVC()
-        }
-        
-    }
-    fileprivate func presentMainVC() {
-        let controller = MainVC()
-        let navController = UINavigationController(rootViewController: controller)
-        navController.viewControllers = [controller]
-        present(navController, animated: true, completion: nil)
-    }
-
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
     }
     
     deinit {
         NotificationCenter.default.removeObserver(self)
-        print("LoginVC deinit")
     }
+    
 }
+
 //MARK: Actions
-extension LoginVC {
-    
-    func handleRegisterButton() {
-        let registerVC = RegisterVC()
-        present(registerVC, animated: true, completion: nil)
-    }
-    
-    func handleResetPasswordButton() {
-        let recoverPassVC = RecoverPassVC()
-        present(recoverPassVC, animated: true, completion: nil)
-    }
+extension RegisterVC {
     
     func handleKeyboardNotification(notification: NSNotification) {
         
@@ -262,7 +197,7 @@ extension LoginVC {
             //move the input area somehow
             
             let isKeyboardShowing = notification.name == NSNotification.Name.UIKeyboardWillShow
-
+            
             bottomConstraint?.constant = isKeyboardShowing ? -keybardFrame!.height / 2 : 0
             
             UIView.animate(withDuration: keyboardDuration!, delay: 0, options: .curveEaseOut, animations: {
@@ -271,7 +206,7 @@ extension LoginVC {
                 self.view.layoutIfNeeded()
                 
             }, completion: { (finished) in
-    
+            
             })
             
             
@@ -283,27 +218,25 @@ extension LoginVC {
         self.view.endEditing(true)
     }
     
-    func handleSignInWithEmail() {
+    func handleBackButton() {
+        dismiss(animated: true, completion: nil)
+    }
+    
+    func handleRegisterWithEmail() {
+        guard let name = nickNameTextField.text else {
+            return
+        }
         guard let email = emailTextField.text else {
             return
         }
         guard  let password = passwordTextField.text else {
             return
         }
-        LoginService.standard.loginWithEmailAndPassword(email: email, password: password, completion: {
+        LoginService.standard.loginWithEmailAndPassword(email: email, password: password, name: name, completion: {
             DispatchQueue.main.async {
-                self.presentMainVC()
-            }
-        })
-    }
-    
-    func handleSignInWithFacebook() {
-        LoginService.standard.loginWithFacebook(vc: self, completion: {
-            DispatchQueue.main.async {
-                 self.presentMainVC()
+                self.dismiss(animated: true, completion: nil)
             }
         })
     }
     
 }
-

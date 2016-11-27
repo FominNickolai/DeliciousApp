@@ -26,12 +26,19 @@ class MenuVC: UIViewController {
         return table
     }()
     
+    let bgColorView: UIView = {
+        let view = UIView()
+        view.backgroundColor = UIColor(red:1,  green:0.404,  blue:0.384, alpha:1)
+        return view
+    }()
+    
     let cellId = "cellId"
     
     var menuItems = [MenuItems.NewRecipe, MenuItems.Exit]
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
         
         view.addSubview(tableView)
         tableView.topAnchor.constraint(equalTo: view.topAnchor).isActive = true
@@ -53,12 +60,25 @@ class MenuVC: UIViewController {
     }
     
     deinit {
-        print("MenuVC Deinit")
     }
     
 }
 //MARK: UITableViewDataSource
 extension MenuVC: UITableViewDataSource {
+    
+    func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+        return mainVC?.user?.userName
+    }
+    
+    func tableView(_ tableView: UITableView, willDisplayHeaderView view: UIView, forSection section: Int) {
+        
+        let header = view as! UITableViewHeaderFooterView
+        header.textLabel?.font = UIFont(name: "HelveticaNeue", size: 18)
+        header.textLabel?.textColor = .white
+        header.backgroundView?.backgroundColor = UIColor(red:1,  green:0.404,  blue:0.384, alpha:1)
+        
+    }
+    
     func numberOfSections(in tableView: UITableView) -> Int {
         return 1
     }
@@ -71,6 +91,7 @@ extension MenuVC: UITableViewDataSource {
         let cell = tableView.dequeueReusableCell(withIdentifier: cellId, for: indexPath) as! MenuCell
         
         cell.menuItem = menuItems[indexPath.row].rawValue
+        cell.selectedBackgroundView = bgColorView
         
         return cell
     }

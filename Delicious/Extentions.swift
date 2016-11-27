@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import  AVFoundation
 
 let imageCache = NSCache<NSString, UIImage>()
 
@@ -56,13 +57,16 @@ extension UIView {
 
 extension UIImageView {
     
-    func loadImageUsingCacheWithUrlString(urlString: String) {
+    func loadImageUsingCacheWithUrlString(urlString: String, completion: (() -> ())?) {
         
         self.image = nil
         
         //check cache for image first
         if let cacehdImage = imageCache.object(forKey: urlString as NSString) {
             self.image = cacehdImage
+            if let comletionToRun = completion {
+                comletionToRun()
+            }
             return
         }
         
@@ -75,7 +79,14 @@ extension UIImageView {
             DispatchQueue.main.async(execute: {
                 if let downloadedImage = UIImage(data: data!) {
                     imageCache.setObject(downloadedImage, forKey: urlString as NSString)
+                    self.alpha = 0
                     self.image = downloadedImage
+                    UIView.animate(withDuration: 1.0, animations: {
+                        self.alpha = 1
+                    })
+                }
+                if let comletionToRun = completion {
+                    comletionToRun()
                 }
             })
             
@@ -91,4 +102,11 @@ extension UIColor {
         self.init(red: r/255, green: g/255, blue: b/255, alpha: 1)
     }
     
+}
+
+extension AVPlayer {
+    
+    var isPlaying: Bool {
+        return ((rate != 0) && (error == nil))
+    }
 }

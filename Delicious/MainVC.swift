@@ -45,12 +45,6 @@ class MainVC: UIViewController {
         return button
     }()
     
-    lazy var logOutBarButton: UIBarButtonItem = {
-        let button = UIBarButtonItem(title: "Exit", style: .plain, target: self, action: #selector(handleLogOutButton))
-        button.tintColor = .white
-        return button
-    }()
-    
     lazy var segmentedControl: BetterSegmentedControl = {
         let segmented = BetterSegmentedControl()
         segmented.translatesAutoresizingMaskIntoConstraints = false
@@ -113,7 +107,6 @@ class MainVC: UIViewController {
         
         navigationItem.title = "Delicious"
         navigationItem.leftBarButtonItem = menuNavBarButton
-        navigationItem.rightBarButtonItem = logOutBarButton
         
         collectionView.register(MainCell.self, forCellWithReuseIdentifier: cellId)
         collectionView.backgroundColor = .clear
@@ -135,7 +128,6 @@ class MainVC: UIViewController {
     }
     
     deinit {
-        print("MainVC Deinit")
     }
     
 }
@@ -186,21 +178,51 @@ extension MainVC {
     
     func fetchByUserRecipes() {
         
-        fetchRecipes(byChild: "fromId", completion: {
+        fetchUserRecipes(byChild: "fromId", completion: {
             self.recipes.sort { $0.timestamp > $1.timestamp }
         })
     }
     
     func fetchByLikesRecipes() {
         
-        fetchRecipes(byChild: "likes", completion: {
-            self.recipes.sort { $0.likes > $1.likes }
+        fetchRecipes(byChild: "likedPosts", completion: {
+            self.recipes.sort { $0.likedPosts.count > $1.likedPosts.count }
         })
     }
     
     func fetchRecipes(byChild: String, completion: @escaping () -> ()) {
         let ref = DataService.ds.REF_POSTS
-        ref.queryOrdered(byChild: "timestamp").observe(.value, with: { (snapshot) in
+        ref.queryOrdered(byChild: byChild).observe(.value, with: { (snapshot) in
+            
+            if let snapshot = snapshot.children.allObjects as? [FIRDataSnapshot] {
+                self.recipes.removeAll(keepingCapacity: true)
+                for snap in snapshot {
+                    
+                    if let recipeDict = snap.value as? Dictionary<String, AnyObject> {
+                        
+                        let key = snap.key
+                        let recipe = Recipe(recipeId: key, recipeData: recipeDict)
+                        self.recipes.append(recipe)
+                        
+                    }
+                    
+                }
+                completion()
+            }
+            
+            DispatchQueue.main.async {
+                self.collectionView.reloadData()
+            }
+            
+        })
+    }
+    
+    func fetchUserRecipes(byChild: String, completion: @escaping () -> ()) {
+        let ref = DataService.ds.REF_POSTS
+        guard let fromId = FIRAuth.auth()?.currentUser?.uid else {
+            return
+        }
+        ref.queryOrdered(byChild: byChild).queryEqual(toValue: fromId).observe(.value, with: { (snapshot) in
             
             if let snapshot = snapshot.children.allObjects as? [FIRDataSnapshot] {
                 self.recipes.removeAll(keepingCapacity: true)
@@ -236,14 +258,9 @@ extension MainVC {
             guard let dictionary = snapshot.value as? [String: AnyObject] else {
                 return
             }
-            
-            guard let likedPosts = dictionary["likedPosts"] as? [String: Int] else {
-                return
-            }
             let user = User()
-            user.likedPosts = [String]()
-            for (key, _) in likedPosts {
-                user.likedPosts?.append(key)
+            if let userName = dictionary["name"] as? String {
+                user.userName = userName
             }
             self.user = user
         })

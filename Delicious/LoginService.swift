@@ -18,7 +18,6 @@ class  LoginService {
         FBSDKLoginManager().logIn(withReadPermissions: ["email", "public_profile"], from: vc) { (result, err) in
             
             if err != nil {
-                print("FB Login Failed")
                 return
             }
             
@@ -53,7 +52,7 @@ class  LoginService {
         }
     }
     
-    func loginWithEmailAndPassword(email: String, password: String, completion: @escaping () -> ()) {
+    func loginWithEmailAndPassword(email: String, password: String, name: String = "", completion: @escaping () -> ()) {
             
         FIRAuth.auth()?.signIn(withEmail: email, password: password, completion: { (user, error) in
             
@@ -61,7 +60,7 @@ class  LoginService {
                 
                 if let user = user {
                     
-                    let userData = ["provider" : user.providerID]
+                    let userData = ["provider" : user.providerID, "name": name]
                     self.completeSignIn(id: user.uid, userData: userData)
                     completion()
                 }
@@ -72,13 +71,19 @@ class  LoginService {
                     if error != nil {
                     } else {
                         if let user = user {
-                            let userData = ["provider" : user.providerID]
+                            let userData = ["provider" : user.providerID, "name": name]
                             self.completeSignIn(id: user.uid, userData: userData)
                             completion()
                         }
                     }
                 })
             }
+        })
+    }
+    
+    func resetPassword(email: String, completion: @escaping () -> ()) {
+        FIRAuth.auth()?.sendPasswordReset(withEmail: email, completion: { (error) in
+            completion()
         })
     }
     

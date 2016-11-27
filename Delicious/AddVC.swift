@@ -55,12 +55,10 @@ class AddVC: UIViewController, UINavigationControllerDelegate {
         didSet {
             for key in propertiesArray {
                 if recipeToSend[key] == nil || recipeToSend[key] == "" {
-                    print(recipeToSend)
                     saveBarButton.isEnabled = false
                     return
                 }
             }
-            print(recipeToSend)
             saveBarButton.isEnabled = true
         }
     }
@@ -69,11 +67,25 @@ class AddVC: UIViewController, UINavigationControllerDelegate {
     
     var recipe: Recipe?
     
+    var bottomConstraint: NSLayoutConstraint?
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
         navigationItem.rightBarButtonItem = saveBarButton
-        saveBarButton.isEnabled = false
+        if recipe != nil {
+            saveBarButton.isEnabled = true
+            recipeToSend["title"] = recipe?.title
+            recipeToSend["timeToCook"] = recipe?.timeToCook
+            recipeToSend["personCount"] = recipe?.personCount
+            recipeToSend["ingridients"] = recipe?.ingridients
+            recipeToSend["instructions"] = recipe?.instructions
+            recipeToSend["recipeImage"] = recipe?.recipeImage
+            recipeToSend["imageNameInStorage"] = recipe?.imageNameInStorage
+        }
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(handleKeyboardNotification), name: NSNotification.Name.UIKeyboardWillShow, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(handleKeyboardNotification), name: NSNotification.Name.UIKeyboardWillHide, object: nil)
         
         view.addSubview(imageView)
         view.addSubview(blurView)
@@ -86,22 +98,58 @@ class AddVC: UIViewController, UINavigationControllerDelegate {
         collectionView.leftAnchor.constraint(equalTo: view.leftAnchor).isActive = true
         collectionView.rightAnchor.constraint(equalTo: view.rightAnchor).isActive = true
         collectionView.topAnchor.constraint(equalTo: view.topAnchor).isActive = true
-        collectionView.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
+        bottomConstraint = collectionView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
+        bottomConstraint?.isActive = true
+        view.addConstraint(bottomConstraint!)
         collectionView.backgroundColor = .clear
         collectionView.register(AddImageCell.self, forCellWithReuseIdentifier: cellImageId)
         collectionView.register(AddTitleCell.self, forCellWithReuseIdentifier: cellTitleId)
         collectionView.register(AddIngrideintsCell.self, forCellWithReuseIdentifier: cellIngridientsId)
         collectionView.register(AddInstructionsCell.self, forCellWithReuseIdentifier: cellInstructionsId)
+        
+        let tapRecognizer = UITapGestureRecognizer(target: self, action: #selector(handleSingleTap))
+        tapRecognizer.cancelsTouchesInView = false
+        collectionView.addGestureRecognizer(tapRecognizer)
+        
     }
     
     deinit {
-        print("AddVC Deinit")
+        NotificationCenter.default.removeObserver(self)
     }
     
 }
 
 //MARK: Actions
 extension AddVC {
+    func handleKeyboardNotification(notification: NSNotification) {
+        
+        if let userInfo = notification.userInfo {
+            
+            let keybardFrame = (userInfo[UIKeyboardFrameBeginUserInfoKey] as? NSValue)?.cgRectValue
+            let keyboardDuration = notification.userInfo?[UIKeyboardAnimationDurationUserInfoKey] as? Double
+            //move the input area somehow
+            
+            let isKeyboardShowing = notification.name == NSNotification.Name.UIKeyboardWillShow
+            bottomConstraint?.constant = isKeyboardShowing ? -keybardFrame!.height : 0
+            
+            UIView.animate(withDuration: keyboardDuration!, delay: 0, options: .curveEaseOut, animations: {
+                
+                //when we need to animate constraints we call layoutIfNeeded()
+                self.view.layoutIfNeeded()
+                
+            }, completion: { (finished) in
+
+            })
+            
+            
+        }
+        
+    }
+    
+    func handleSingleTap() {
+        self.view.endEditing(true)
+    }
+    
     func handleUploadTap() {
         let imagePickerController = UIImagePickerController()
         imagePickerController.allowsEditing = true
@@ -112,7 +160,7 @@ extension AddVC {
     }
     
     func handleSaveButton() {
-        
+        self.saveBarButton.isEnabled = false
         let alertController = UIAlertController(title: "Great", message: "Successfully Saved", preferredStyle: .alert)
         let okAction = UIAlertAction(title: "OK", style: .default, handler: { action in
             
@@ -125,10 +173,12 @@ extension AddVC {
         alertController.addAction(okAction)
         
         if let image = imageRecipe {
-            uploadToFirebaseStorageUsingImage(image: image, completion: { imageUrl in
+            uploadToFirebaseStorageUsingImage(image: image, completion: { (imageUrl, imageName) in
                 self.recipeToSend["recipeImage"] = imageUrl
+                self.recipeToSend["imageNameInStorage"] = imageName
                 self.saveRicepeToDatabase(properties: self.recipeToSend, completion: { 
                     self.present(alertController, animated: true, completion: nil)
+                    self.saveBarButton.isEnabled = true
                 })
             })
         }
@@ -142,7 +192,7 @@ extension AddVC {
         }
         let timeStamp = String(Int(Date().timeIntervalSince1970))
     
-        var values: [String: AnyObject] = ["fromId": fromId as AnyObject, "timestamp": timeStamp as AnyObject, "likes" : 0 as AnyObject]
+        var values: [String: AnyObject] = ["fromId": fromId as AnyObject, "timestamp": timeStamp as AnyObject]
         
         properties.forEach { (key, value) in
             values[key] = value as AnyObject?
@@ -165,9 +215,13 @@ extension AddVC {
         })
     }
     
-    fileprivate func uploadToFirebaseStorageUsingImage(image: UIImage, completion: @escaping (_ imageUrl: String) -> ()) {
-        
-        let imageName = NSUUID().uuidString
+    fileprivate func uploadToFirebaseStorageUsingImage(image: UIImage, completion: @escaping (_ imageUrl: String, _ imageName: String) -> ()) {
+        var imageName: String
+        if let oldImageName = recipe?.imageNameInStorage {
+            imageName = oldImageName
+        } else {
+            imageName = NSUUID().uuidString
+        }
         let ref = DataService.ds.REF_POST_IMAGES.child(imageName)
         let metadata = FIRStorageMetadata()
         metadata.contentType = "image/jpeg"
@@ -179,13 +233,95 @@ extension AddVC {
                 }
                 
                 if let imageUrl = metadata?.downloadURL()?.absoluteString {
-                    completion(imageUrl)
+                    completion(imageUrl, imageName)
                 }
                 
             })
         }
         
     }
+    
+//    fileprivate func thumbnailImageForFileUrl(fileUrl: URL) -> UIImage? {
+//        
+//        let asset = AVAsset(url: fileUrl)
+//        let imageGenerator = AVAssetImageGenerator(asset: asset)
+//        
+//        do {
+//            let thumbnailCGImage = try imageGenerator.copyCGImage(at: CMTimeMake(1, 60), actualTime: nil)
+//            
+//            return UIImage(cgImage: thumbnailCGImage)
+//        } catch {
+//            
+//        }
+//        
+//        return nil
+//        
+//    }
+    
+//    fileprivate func handleVideoSelectedForUrl(url: URL) {
+//        var videoName: String
+//        if let oldVideoName = recipe?.videoNameInStorage {
+//            videoName = oldVideoName
+//        } else {
+//            videoName = NSUUID().uuidString
+//        }
+//        let uploadTask = DataService.ds.REF_POST_VIDEOS.child(videoName).putFile(url, metadata: nil, completion: { (metadata, error) in
+//        
+//            if error != nil {
+//                print("Error to upload video")
+//                return
+//            }
+//            
+//            if let videoUrl = metadata?.downloadURL()?.absoluteString {
+//                
+//                
+//                if let thumbnailImage = self.thumbnailImageForFileUrl(fileUrl: url) {
+//                    
+//                    self.uploadToFirebaseStorageUsingImage(image: thumbnailImage, completion: { (imageUrl, imageName) in
+//                        
+//                        let indexPath = IndexPath(item: 0, section: 0)
+//                        let cell = self.collectionView.cellForItem(at: indexPath) as! AddImageCell
+//                        DispatchQueue.main.async(execute: { 
+//                            cell.setImage = thumbnailImage
+//                            self.imageRecipe = thumbnailImage
+//                        })
+//                        
+//                        
+//                        self.recipeToSend["recipeImage"] = imageUrl
+//                        self.recipeToSend["imageNameInStorage"] = imageName
+//                        self.recipeToSend["videoUrl"] = videoUrl
+//                        self.recipeToSend["videoNameInStorage"] = videoName
+////                        self.saveRicepeToDatabase(properties: self.recipeToSend, completion: {
+////                            //self.present(alertController, animated: true, completion: nil)
+////                            self.saveBarButton.isEnabled = true
+////                        })
+//                        
+//                    })
+//                    
+//                }
+//                
+//            }
+//            
+//        })
+//        
+//        uploadTask.observe(.progress, handler: { (snapshot) in
+//            
+//            if let completedUnitCount = snapshot.progress?.completedUnitCount {
+//                print(String(completedUnitCount))
+//            }
+//            
+//            
+//            
+//        })
+//        
+//        uploadTask.observe(.success, handler: {(snapshot) in
+//            
+//            print("Successfuly upload video")
+//            
+//            
+//        })
+//        
+//    }
     
 }
 
@@ -201,7 +337,11 @@ extension AddVC: UICollectionViewDataSource {
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: cellImageId, for: indexPath) as! AddImageCell
             cell.addVC = self
             if recipe != nil {
-                cell.uploadImageView.loadImageUsingCacheWithUrlString(urlString: (recipe?.recipeImage)!)
+                let imageView = UIImageView()
+                imageView.loadImageUsingCacheWithUrlString(urlString: (recipe?.recipeImage)!, completion: nil)
+                cell.uploadImageView.image = imageView.image
+                self.imageRecipe = imageView.image
+                cell.addButtonImage.alpha = 0.2
             }
             return cell
         } else if indexPath.item == 1 {
@@ -239,6 +379,12 @@ extension AddVC: UICollectionViewDataSource {
 }
 //MARK: UITextFieldDelegate
 extension AddVC: UITextFieldDelegate {
+    
+    func textFieldDidBeginEditing(_ textField: UITextField) {
+        let indexPath = IndexPath(item: 1, section: 0)
+        collectionView.scrollToItem(at: indexPath, at: .bottom, animated: true)
+    }
+    
     func textFieldDidEndEditing(_ textField: UITextField) {
         switch textField.tag {
         case 1:
@@ -260,6 +406,19 @@ extension AddVC: UITextViewDelegate {
             recipeToSend["ingridients"] = textView.text!
         case 2:
             recipeToSend["instructions"] = textView.text!
+        default:
+            break
+        }
+    }
+    
+    func textViewDidBeginEditing(_ textView: UITextView) {
+        switch textView.tag {
+        case 1:
+            let indexPath = IndexPath(item: 2, section: 0)
+            collectionView.scrollToItem(at: indexPath, at: .bottom, animated: true)
+        case 2:
+            let indexPath = IndexPath(item: 3, section: 0)
+            collectionView.scrollToItem(at: indexPath, at: .bottom, animated: true)
         default:
             break
         }

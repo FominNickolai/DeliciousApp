@@ -9,5 +9,5 @@
 import Foundation
 
 class User: NSObject {
-    var likedPosts: [String]?
+    var userName: String?
 }
