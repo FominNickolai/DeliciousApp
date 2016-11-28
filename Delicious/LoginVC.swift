@@ -290,17 +290,41 @@ extension LoginVC {
         guard  let password = passwordTextField.text else {
             return
         }
-        LoginService.standard.loginWithEmailAndPassword(email: email, password: password, completion: {
-            DispatchQueue.main.async {
+        LoginService.standard.loginWithEmailAndPassword(email: email, password: password, completion: { (error) in
+            
+            if let firebaseError = error {
+                switch firebaseError {
+                case .errorCodeInvalidEmail, .errorCodeWrongPassword:
+                    self.showAlertActionWithTitleAndText(title: "Notification", text: "Email or Password is not correct")
+                    return
+                case .errorCodeUserNotFound:
+                    self.showAlertActionWithTitleAndText(title: "Notification", text: "User is not found")
+                    return
+                default:
+                    self.showAlertActionWithTitleAndText(title: "Notification", text: "Something goes wrong, please try again")
+                    return
+                }
+            }
+            DispatchQueue.main.async {[unowned self] in
                 self.presentMainVC()
             }
         })
     }
     
+    func showAlertActionWithTitleAndText(title: String, text: String) {
+        let alertVC = UIAlertController(title: title, message: text, preferredStyle: .alert)
+        let okAction = UIAlertAction(title: "OK", style: .default, handler: nil)
+        alertVC.addAction(okAction)
+        present(alertVC, animated: true, completion: nil)
+    }
+    
     func handleSignInWithFacebook() {
         LoginService.standard.loginWithFacebook(vc: self, completion: {
-            DispatchQueue.main.async {
-                 self.presentMainVC()
+            let accessToken = FBSDKAccessToken.current()
+            if (accessToken?.tokenString) != nil {
+                DispatchQueue.main.async {[unowned self] in
+                    self.presentMainVC()
+                }
             }
         })
     }

@@ -207,7 +207,7 @@ extension RecoverPassVC {
             
             alertController.addAction(okAction)
         
-            DispatchQueue.main.async(execute: { 
+            DispatchQueue.main.async(execute: { [unowned self] in
                 self.present(alertController, animated: true, completion: nil)
             })
             

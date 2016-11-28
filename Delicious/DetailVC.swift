@@ -8,6 +8,8 @@
 
 import UIKit
 import Firebase
+import NVActivityIndicatorView
+import Social
 
 class DetailVC: UIViewController {
     
@@ -48,6 +50,29 @@ class DetailVC: UIViewController {
         return button
     }()
     
+    let bgView: UIView = {
+        let view = UIView()
+        view.backgroundColor = UIColor(red:0.318,  green:0.318,  blue:0.318, alpha:0.7)
+        view.translatesAutoresizingMaskIntoConstraints = false
+        view.isHidden = true
+        return view
+    }()
+    
+    let activityIndicator: NVActivityIndicatorView = {
+        let activity = NVActivityIndicatorView(frame: CGRect(x: 0, y: 0, width: 50, height: 50))
+        activity.type = .ballTrianglePath
+        activity.color = UIColor(red:1,  green:0.404,  blue:0.384, alpha:1)
+        activity.translatesAutoresizingMaskIntoConstraints = false
+        return activity
+    }()
+    
+    lazy var shareBarButton: UIBarButtonItem = {
+        let button = UIBarButtonItem(image: UIImage(named: "share-file"), style: .plain, target: self, action: #selector(handleShareButton))
+        button.tintColor = .white
+        return button
+    }()
+
+    
     
     let cellImageId = "cellId"
     let cellTitleId = "cellTitleId"
@@ -65,17 +90,36 @@ class DetailVC: UIViewController {
         
         let fromId = FIRAuth.auth()?.currentUser?.uid
         if fromId == recipe?.fromId {
-            navigationItem.rightBarButtonItems = [deleteBarButton, editBarButton]
+            if SLComposeViewController.isAvailable(forServiceType: SLServiceTypeFacebook) {
+                navigationItem.rightBarButtonItems = [deleteBarButton, shareBarButton, editBarButton]
+            } else {
+                navigationItem.rightBarButtonItems = [deleteBarButton, editBarButton]
+            }
+        } else {
+            if SLComposeViewController.isAvailable(forServiceType: SLServiceTypeFacebook) {
+                navigationItem.rightBarButtonItems = [shareBarButton]
+            }
         }
         
         view.addSubview(imageView)
         view.addSubview(blurView)
         view.addSubview(collectionView)
+        view.addSubview(bgView)
+        bgView.addSubview(activityIndicator)
         
         imageView.widthAnchor.constraint(equalTo: view.widthAnchor).isActive = true
         imageView.heightAnchor.constraint(equalTo: view.heightAnchor).isActive = true
         blurView.widthAnchor.constraint(equalTo: view.widthAnchor).isActive = true
         blurView.heightAnchor.constraint(equalTo: view.heightAnchor).isActive = true
+        
+        bgView.widthAnchor.constraint(equalTo: view.widthAnchor).isActive = true
+        bgView.heightAnchor.constraint(equalTo: view.heightAnchor).isActive = true
+        
+        activityIndicator.centerYAnchor.constraint(equalTo: bgView.centerYAnchor).isActive = true
+        activityIndicator.centerXAnchor.constraint(equalTo: bgView.centerXAnchor).isActive = true
+        activityIndicator.widthAnchor.constraint(equalToConstant: 50).isActive = true
+        activityIndicator.heightAnchor.constraint(equalToConstant: 50).isActive = true
+        
         collectionView.leftAnchor.constraint(equalTo: view.leftAnchor).isActive = true
         collectionView.rightAnchor.constraint(equalTo: view.rightAnchor).isActive = true
         collectionView.topAnchor.constraint(equalTo: view.topAnchor).isActive = true
@@ -103,6 +147,34 @@ class DetailVC: UIViewController {
 //MARK: Actions
 extension DetailVC {
     
+    func handleShareButton() {
+        let shareActionSheet = UIAlertController(title: "Facebook", message: "Share recipe to your friends by Facebook?", preferredStyle: .alert)
+        let facebookShareAction = UIAlertAction(title: "Share", style: .default, handler: { (action) in
+        
+            if SLComposeViewController.isAvailable(forServiceType: SLServiceTypeFacebook) {
+                let facebookComposer = SLComposeViewController(forServiceType: SLServiceTypeFacebook)
+                let imageView = UIImageView()
+                imageView.loadImageUsingCacheWithUrlString(urlString: self.recipe!.recipeImage, completion: {
+                    if let image = imageView.image {
+                        facebookComposer?.add(image)
+                    }
+                })
+                self.present(facebookComposer!, animated: true, completion: nil)
+                
+            } else {
+                return
+            }
+            
+        })
+        
+        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
+        shareActionSheet.addAction(facebookShareAction)
+        shareActionSheet.addAction(cancelAction)
+        
+        present(shareActionSheet, animated: true, completion: nil)
+        
+    }
+    
     func handleEditButton() {
         let addVC = AddVC()
         addVC.recipe = self.recipe
@@ -110,6 +182,7 @@ extension DetailVC {
     }
     
     func handleDeleteButton() {
+        
         let alertController = UIAlertController(title: "Delete", message: "Are you sure you want to delete this Recipe?", preferredStyle: .alert)
         let okAction = UIAlertAction(title: "OK", style: .destructive, handler: { action in
             self.deleteRecipeFromDatabase()
@@ -122,6 +195,12 @@ extension DetailVC {
     
     func deleteRecipeFromDatabase() {
         if let recipeImageName = recipe?.imageNameInStorage {
+            UIView.animate(withDuration: 0.3, animations: {
+                
+                self.bgView.isHidden = false
+                self.activityIndicator.startAnimating()
+                
+            })
             DataService.ds.REF_POST_IMAGES.child(recipeImageName).delete(completion: { (error) in
                 if error != nil {
                     return
@@ -133,13 +212,14 @@ extension DetailVC {
                             return
                         }
                         
-                        DispatchQueue.main.async(execute: {
+                        DispatchQueue.main.async(execute: { [weak self] in
                             let alertController = UIAlertController(title: "Success", message: "You have successfully deleted this recipe", preferredStyle: .alert)
                             let okAction = UIAlertAction(title: "OK", style: .destructive, handler: { action in
-                                _ = self.navigationController?.popToRootViewController(animated: true)
+                                _ = self?.navigationController?.popToRootViewController(animated: true)
                             })
                             alertController.addAction(okAction)
-                            self.present(alertController, animated: true, completion: nil)
+                            self?.bgView.removeFromSuperview()
+                            self?.present(alertController, animated: true, completion: nil)
                             
                         })
                     })

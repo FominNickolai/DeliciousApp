@@ -223,20 +223,54 @@ extension RegisterVC {
     }
     
     func handleRegisterWithEmail() {
-        guard let name = nickNameTextField.text else {
+        let alertVC = UIAlertController(title: "Notification", message: "Please fill in all the fields", preferredStyle: .alert)
+        let okAction = UIAlertAction(title: "OK", style: .default, handler: nil)
+        alertVC.addAction(okAction)
+        guard let name = nickNameTextField.text, name != "" else {
+            present(alertVC, animated: true, completion: nil)
             return
         }
-        guard let email = emailTextField.text else {
+        guard let email = emailTextField.text, email != "" else {
+            present(alertVC, animated: true, completion: nil)
             return
         }
-        guard  let password = passwordTextField.text else {
+        guard  let password = passwordTextField.text, password != "" else {
+            present(alertVC, animated: true, completion: nil)
             return
         }
-        LoginService.standard.loginWithEmailAndPassword(email: email, password: password, name: name, completion: {
-            DispatchQueue.main.async {
+        
+        
+        LoginService.standard.registerWithEmailAndPassword(email: email, password: password, name: name, completion: { (error) in
+            
+            if let firebaseError = error {
+                switch firebaseError {
+                case .errorCodeInvalidEmail:
+                    self.showAlertActionWithTitleAndText(title: "Email", text: "Email you entered is not correct")
+                    return
+                case .errorCodeEmailAlreadyInUse:
+                    self.showAlertActionWithTitleAndText(title: "Email", text: "Email you entered is already in use")
+                    return
+                case .errorCodeWeakPassword:
+                    self.showAlertActionWithTitleAndText(title: "Password", text: "The password you entered is weak, at least 6 characters required")
+                    return
+                default:
+                    self.showAlertActionWithTitleAndText(title: "Notification", text: "Something goes wrong, please try again")
+                    return
+                }
+            }
+
+            DispatchQueue.main.async {[unowned self] in
                 self.dismiss(animated: true, completion: nil)
             }
+        
         })
+    }
+    
+    func showAlertActionWithTitleAndText(title: String, text: String) {
+        let alertVC = UIAlertController(title: title, message: text, preferredStyle: .alert)
+        let okAction = UIAlertAction(title: "OK", style: .default, handler: nil)
+        alertVC.addAction(okAction)
+        present(alertVC, animated: true, completion: nil)
     }
     
 }

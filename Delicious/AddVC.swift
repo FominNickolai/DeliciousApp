@@ -10,6 +10,7 @@ import UIKit
 import AVFoundation
 import MobileCoreServices
 import Firebase
+import NVActivityIndicatorView
 
 class AddVC: UIViewController, UINavigationControllerDelegate {
     
@@ -42,6 +43,22 @@ class AddVC: UIViewController, UINavigationControllerDelegate {
         let button = UIBarButtonItem(title: "Save", style: .plain, target: self, action: #selector(handleSaveButton))
         button.tintColor = .white
         return button
+    }()
+    
+    let bgView: UIView = {
+        let view = UIView()
+        view.backgroundColor = UIColor(red:0.318,  green:0.318,  blue:0.318, alpha:0.7)
+        view.translatesAutoresizingMaskIntoConstraints = false
+        view.isHidden = true
+        return view
+    }()
+    
+    let activityIndicator: NVActivityIndicatorView = {
+        let activity = NVActivityIndicatorView(frame: CGRect(x: 0, y: 0, width: 50, height: 50))
+        activity.type = .ballTrianglePath
+        activity.color = UIColor(red:1,  green:0.404,  blue:0.384, alpha:1)
+        activity.translatesAutoresizingMaskIntoConstraints = false
+        return activity
     }()
     
     let cellImageId = "cellId"
@@ -91,6 +108,9 @@ class AddVC: UIViewController, UINavigationControllerDelegate {
         view.addSubview(blurView)
         view.addSubview(collectionView)
         
+        view.addSubview(bgView)
+        bgView.addSubview(activityIndicator)
+        
         imageView.widthAnchor.constraint(equalTo: view.widthAnchor).isActive = true
         imageView.heightAnchor.constraint(equalTo: view.heightAnchor).isActive = true
         blurView.widthAnchor.constraint(equalTo: view.widthAnchor).isActive = true
@@ -101,6 +121,15 @@ class AddVC: UIViewController, UINavigationControllerDelegate {
         bottomConstraint = collectionView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
         bottomConstraint?.isActive = true
         view.addConstraint(bottomConstraint!)
+        
+        bgView.widthAnchor.constraint(equalTo: view.widthAnchor).isActive = true
+        bgView.heightAnchor.constraint(equalTo: view.heightAnchor).isActive = true
+        
+        activityIndicator.centerYAnchor.constraint(equalTo: bgView.centerYAnchor).isActive = true
+        activityIndicator.centerXAnchor.constraint(equalTo: bgView.centerXAnchor).isActive = true
+        activityIndicator.widthAnchor.constraint(equalToConstant: 50).isActive = true
+        activityIndicator.heightAnchor.constraint(equalToConstant: 50).isActive = true
+        
         collectionView.backgroundColor = .clear
         collectionView.register(AddImageCell.self, forCellWithReuseIdentifier: cellImageId)
         collectionView.register(AddTitleCell.self, forCellWithReuseIdentifier: cellTitleId)
@@ -160,12 +189,21 @@ extension AddVC {
     }
     
     func handleSaveButton() {
+        
+        UIView.animate(withDuration: 0.3, animations: {
+        
+            self.bgView.isHidden = false
+            self.activityIndicator.startAnimating()
+            
+        })
+        
         self.saveBarButton.isEnabled = false
         let alertController = UIAlertController(title: "Great", message: "Successfully Saved", preferredStyle: .alert)
         let okAction = UIAlertAction(title: "OK", style: .default, handler: { action in
             
-            DispatchQueue.main.async(execute: { 
-                _ = self.navigationController?.popToRootViewController(animated: true)
+            DispatchQueue.main.async(execute: { [weak self] in
+                
+                _ = self?.navigationController?.popToRootViewController(animated: true)
             })
             
         })
@@ -176,7 +214,8 @@ extension AddVC {
             uploadToFirebaseStorageUsingImage(image: image, completion: { (imageUrl, imageName) in
                 self.recipeToSend["recipeImage"] = imageUrl
                 self.recipeToSend["imageNameInStorage"] = imageName
-                self.saveRicepeToDatabase(properties: self.recipeToSend, completion: { 
+                self.saveRicepeToDatabase(properties: self.recipeToSend, completion: {
+                    self.bgView.removeFromSuperview()
                     self.present(alertController, animated: true, completion: nil)
                     self.saveBarButton.isEnabled = true
                 })

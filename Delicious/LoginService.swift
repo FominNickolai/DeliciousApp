@@ -15,6 +15,7 @@ class  LoginService {
     static let standard = LoginService()
     
     func loginWithFacebook(vc: UIViewController, completion: @escaping () -> ()) {
+        
         FBSDKLoginManager().logIn(withReadPermissions: ["email", "public_profile"], from: vc) { (result, err) in
             
             if err != nil {
@@ -37,10 +38,13 @@ class  LoginService {
             if error != nil {
                 return
             }
+            
             let userData = ["provider": credentials.provider, "name": user?.displayName]
             guard let userToWrite = user else {
                 return
             }
+            
+            
             self.completeSignIn(id: userToWrite.uid, userData: userData as! Dictionary<String, String>)
         })
         
@@ -52,34 +56,49 @@ class  LoginService {
         }
     }
     
-    func loginWithEmailAndPassword(email: String, password: String, name: String = "", completion: @escaping () -> ()) {
+    func loginWithEmailAndPassword(email: String, password: String, name: String = "", completion: @escaping (_ error: FIRAuthErrorCode?) -> ()) {
             
         FIRAuth.auth()?.signIn(withEmail: email, password: password, completion: { (user, error) in
             
-            if error == nil {
+            if error != nil {
+                
+                if let errCode = FIRAuthErrorCode(rawValue: error!._code) {
+                    completion(errCode)
+                    
+                }
+                
+            } else {
                 
                 if let user = user {
                     
                     let userData = ["provider" : user.providerID, "name": name]
                     self.completeSignIn(id: user.uid, userData: userData)
-                    completion()
+                    completion(nil)
                 }
-                
-            } else {
-                
-                FIRAuth.auth()?.createUser(withEmail: email, password: password, completion: { (user, error) in
-                    if error != nil {
-                    } else {
-                        if let user = user {
-                            let userData = ["provider" : user.providerID, "name": name]
-                            self.completeSignIn(id: user.uid, userData: userData)
-                            completion()
-                        }
-                    }
-                })
             }
         })
     }
+    
+    func registerWithEmailAndPassword(email: String, password: String, name: String = "", completion: @escaping (_ error: FIRAuthErrorCode?) -> ()) {
+        FIRAuth.auth()?.createUser(withEmail: email, password: password, completion: { (user, error) in
+            if error != nil {
+                
+                if let errCode = FIRAuthErrorCode(rawValue: error!._code) {
+                    completion(errCode)
+                    
+                }
+                
+            } else {
+                if let user = user {
+                    let userData = ["provider" : user.providerID, "name": name]
+                    self.completeSignIn(id: user.uid, userData: userData)
+                    completion(nil)
+                }
+            }
+        })
+    }
+    
+    
     
     func resetPassword(email: String, completion: @escaping () -> ()) {
         FIRAuth.auth()?.sendPasswordReset(withEmail: email, completion: { (error) in
@@ -88,11 +107,11 @@ class  LoginService {
     }
     
     private func completeSignIn(id: String, userData: Dictionary<String, String>) {
+       
+        _ = KeychainWrapper.standard.set(id, forKey: KEY_UID)
         
         DataService.ds.createFirebaseDBUser(uid: id, userData: userData)
         
-        DispatchQueue.main.async {
-            _ = KeychainWrapper.standard.set(id, forKey: KEY_UID)
-        }
+        
     }
 }

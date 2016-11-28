@@ -10,6 +10,7 @@ import UIKit
 import SwiftKeychainWrapper
 import BetterSegmentedControl
 import Firebase
+import NVActivityIndicatorView
 
 class MainVC: UIViewController {
     
@@ -60,6 +61,15 @@ class MainVC: UIViewController {
         return segmented
     }()
     
+    let activityIndicator: NVActivityIndicatorView = {
+        let activity = NVActivityIndicatorView(frame: CGRect(x: 0, y: 0, width: 50, height: 50))
+        activity.type = .ballTrianglePath
+        activity.color = UIColor(red:1,  green:0.404,  blue:0.384, alpha:1)
+        activity.startAnimating()
+        activity.translatesAutoresizingMaskIntoConstraints = false
+        return activity
+    }()
+    
     let menuTransitionManager = MenuTransitionManager()
     
     let cellId = "cellId"
@@ -72,6 +82,8 @@ class MainVC: UIViewController {
     
     var shownIndexPath = Set<Int>()
     
+    var currentFilterItem = 0
+    
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
@@ -81,12 +93,19 @@ class MainVC: UIViewController {
         }
         
         viewDidAppearProcessed = true
+        
+        do {
+            try segmentedControl.set(index: UInt(currentFilterItem), animated: true)
+        } catch {
+        }
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
         view.addSubview(imageView)
         view.addSubview(blurView)
+        view.addSubview(activityIndicator)
         view.addSubview(collectionView)
         
         imageView.widthAnchor.constraint(equalTo: view.widthAnchor).isActive = true
@@ -99,6 +118,11 @@ class MainVC: UIViewController {
         segmentedControl.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -8).isActive = true
         segmentedControl.topAnchor.constraint(equalTo: view.topAnchor, constant: 74).isActive = true
         segmentedControl.heightAnchor.constraint(equalToConstant: 50).isActive = true
+        
+        activityIndicator.centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true
+        activityIndicator.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+        activityIndicator.widthAnchor.constraint(equalToConstant: 50).isActive = true
+        activityIndicator.heightAnchor.constraint(equalToConstant: 50).isActive = true
         
         collectionView.leftAnchor.constraint(equalTo: view.leftAnchor).isActive = true
         collectionView.rightAnchor.constraint(equalTo: view.rightAnchor).isActive = true
@@ -117,10 +141,14 @@ class MainVC: UIViewController {
         
         fetchAllRecipes()
         
-        fetchUserData()
+        DispatchQueue.global(qos: .userInteractive).asyncAfter(deadline: .now() + .seconds(2)) { [unowned self] in
+            self.fetchUserData()
+            
+        }
         
         do {
             try segmentedControl.set(index: 0, animated: true)
+            currentFilterItem = 0
         } catch {
         }
         
@@ -160,10 +188,13 @@ extension MainVC {
         switch sender.index {
         case 0:
             fetchAllRecipes()
+            currentFilterItem = 0
         case 1:
             fetchByUserRecipes()
+            currentFilterItem = 1
         case 2:
             fetchByLikesRecipes()
+            currentFilterItem = 2
         default:
             break
         }
@@ -210,8 +241,8 @@ extension MainVC {
                 completion()
             }
             
-            DispatchQueue.main.async {
-                self.collectionView.reloadData()
+            DispatchQueue.main.async { [weak self] in
+                self?.collectionView.reloadData()
             }
             
         })
@@ -240,8 +271,8 @@ extension MainVC {
                 completion()
             }
             
-            DispatchQueue.main.async {
-                self.collectionView.reloadData()
+            DispatchQueue.main.async { [weak self] in
+                self?.collectionView.reloadData()
             }
             
         })
@@ -306,6 +337,8 @@ extension MainVC: UICollectionViewDelegate {
     }
     
     func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
+        
+        activityIndicator.stopAnimating()
         
         if !shownIndexPath.contains(indexPath.item) {
             
