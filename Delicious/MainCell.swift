@@ -11,6 +11,8 @@ import NVActivityIndicatorView
 
 class MainCell: UICollectionViewCell {
     
+    weak var mainVC: MainVC?
+    
     var recipe: Recipe? {
         didSet {
             if let title = recipe?.title {
@@ -93,6 +95,23 @@ class MainCell: UICollectionViewCell {
         return activity
     }()
     
+    let buttonBlurView: UIVisualEffectView = {
+        let blurEffect = UIBlurEffect(style: .dark)
+        let blurEffectView = UIVisualEffectView(effect: blurEffect)
+        blurEffectView.layer.cornerRadius = 16
+        blurEffectView.layer.masksToBounds = true
+        blurEffectView.translatesAutoresizingMaskIntoConstraints = false
+        return blurEffectView
+    }()
+    
+    lazy var editRecipeButton: UIButton = {
+        let button = UIButton(type: .custom)
+        button.setImage(UIImage(named: "more"), for: .normal)
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.addTarget(self, action: #selector(handleEditCell), for: .touchUpInside)
+        return button
+    }()
+    
     override init(frame: CGRect) {
         super.init(frame: frame)
         
@@ -102,10 +121,11 @@ class MainCell: UICollectionViewCell {
         addSubview(cellImage)
         addSubview(blurView)
         addSubview(activityIndicator)
+        addSubview(buttonBlurView)
+        buttonBlurView.addSubview(editRecipeButton)
         blurView.addSubview(cellTitle)
         blurView.addSubview(favoriteImage)
         blurView.addSubview(likesCountLabel)
-        
         
         cellImage.widthAnchor.constraint(equalTo: widthAnchor).isActive = true
         cellImage.heightAnchor.constraint(equalTo: heightAnchor).isActive = true
@@ -131,6 +151,19 @@ class MainCell: UICollectionViewCell {
         cellTitle.leftAnchor.constraint(equalTo: blurView.leftAnchor, constant: 10).isActive = true
         cellTitle.rightAnchor.constraint(equalTo: likesCountLabel.leftAnchor, constant: -10).isActive = true
         cellTitle.centerYAnchor.constraint(equalTo: blurView.centerYAnchor).isActive = true
+        
+        buttonBlurView.rightAnchor.constraint(equalTo: rightAnchor, constant: -20).isActive = true
+        buttonBlurView.topAnchor.constraint(equalTo: topAnchor, constant: 20).isActive = true
+        buttonBlurView.widthAnchor.constraint(equalToConstant: 32).isActive = true
+        buttonBlurView.heightAnchor.constraint(equalToConstant: 32).isActive = true
+        editRecipeButton.widthAnchor.constraint(equalTo: buttonBlurView.widthAnchor).isActive = true
+        editRecipeButton.heightAnchor.constraint(equalTo: buttonBlurView.heightAnchor).isActive = true
+        editRecipeButton.rightAnchor.constraint(equalTo: buttonBlurView.rightAnchor).isActive = true
+        editRecipeButton.topAnchor.constraint(equalTo: buttonBlurView.topAnchor).isActive = true
+    }
+    
+    func handleEditCell() {
+        mainVC?.editCell()
     }
     
     override func prepareForReuse() {

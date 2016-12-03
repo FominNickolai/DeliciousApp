@@ -296,6 +296,10 @@ extension MainVC {
             self.user = user
         })
     }
+    
+    func editCell() {
+        
+    }
 }
 //MARK: MenuTransitionManagerDelegate
 extension MainVC: MenuTransitionManagerDelegate {
@@ -356,6 +360,8 @@ extension MainVC: UICollectionViewDelegate {
         
     }
     
+    
+    
 }
 
 //MARK: UICollectionViewDelegateFlowLayout
@@ -371,6 +377,12 @@ extension MainVC: UICollectionViewDelegateFlowLayout {
         
         return UIEdgeInsetsMake(0, 0, 0, 0)
         
+    }
+    
+    override func viewWillLayoutSubviews() {
+        super.viewWillLayoutSubviews()
+        
+        self.collectionView.collectionViewLayout.invalidateLayout()
     }
     
 }

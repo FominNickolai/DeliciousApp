@@ -403,4 +403,10 @@ extension DetailVC: UICollectionViewDelegateFlowLayout {
         
     }
     
+    override func viewWillLayoutSubviews() {
+        super.viewWillLayoutSubviews()
+        
+        self.collectionView.collectionViewLayout.invalidateLayout()
+    }
+    
 }

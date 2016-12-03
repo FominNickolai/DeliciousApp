@@ -81,6 +81,10 @@ class RecoverPassVC: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        if UIDevice.type == iPad {
+            backgroundImageView.contentMode = .scaleAspectFill
+        }
+        
         NotificationCenter.default.addObserver(self, selector: #selector(handleKeyboardNotification), name: NSNotification.Name.UIKeyboardWillShow, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(handleKeyboardNotification), name: NSNotification.Name.UIKeyboardWillHide, object: nil)
         

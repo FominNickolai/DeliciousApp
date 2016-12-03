@@ -9,7 +9,16 @@
 import UIKit
 import  AVFoundation
 
+//MARK: -  Device Check
+let iPad = UIUserInterfaceIdiom.pad
+let iPhone = UIUserInterfaceIdiom.phone
+
 let imageCache = NSCache<NSString, UIImage>()
+
+extension UIDevice {
+    static var type: UIUserInterfaceIdiom
+    { return UIDevice.current.userInterfaceIdiom }
+}
 
 extension Array where Element: Equatable {
     

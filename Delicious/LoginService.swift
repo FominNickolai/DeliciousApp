@@ -68,11 +68,8 @@ class  LoginService {
                 }
                 
             } else {
-                
                 if let user = user {
-                    
-                    let userData = ["provider" : user.providerID, "name": name]
-                    self.completeSignIn(id: user.uid, userData: userData)
+                    _ = KeychainWrapper.standard.set(user.uid, forKey: KEY_UID)
                     completion(nil)
                 }
             }

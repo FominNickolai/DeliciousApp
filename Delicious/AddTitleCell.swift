@@ -10,7 +10,13 @@ import UIKit
 
 class AddTitleCell: DetailBaseCell {
     
-    weak var addVC: AddVC?
+    weak var addVC: AddVC? {
+        didSet {
+            timeToCook.addTarget(addVC, action: #selector(addVC?.textChanged), for: .editingChanged)
+            personCount.addTarget(addVC, action: #selector(addVC?.textChanged), for: .editingChanged)
+            cellTitle.addTarget(addVC, action: #selector(addVC?.textChanged), for: .editingChanged)
+        }
+    }
     
     let clockImage: UIImageView = {
         let image = UIImageView()

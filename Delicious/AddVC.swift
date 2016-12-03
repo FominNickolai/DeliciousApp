@@ -42,6 +42,7 @@ class AddVC: UIViewController, UINavigationControllerDelegate {
     lazy var saveBarButton: UIBarButtonItem = {
         let button = UIBarButtonItem(title: "Save", style: .plain, target: self, action: #selector(handleSaveButton))
         button.tintColor = .white
+        button.isEnabled = false
         return button
     }()
     
@@ -67,11 +68,18 @@ class AddVC: UIViewController, UINavigationControllerDelegate {
     let cellInstructionsId = "cellInstructionsId"
     
     let propertiesArray = ["title", "timeToCook", "personCount", "ingridients", "instructions"]
+    var imageIsSet: Bool = false {
+        didSet {
+            if imageIsSet {
+                saveBarButton.isEnabled = true
+            }
+        }
+    }
     
     var recipeToSend: [String: String] = [:] {
         didSet {
             for key in propertiesArray {
-                if recipeToSend[key] == nil || recipeToSend[key] == "" {
+                if recipeToSend[key] == nil || recipeToSend[key] == "" || imageIsSet == false {
                     saveBarButton.isEnabled = false
                     return
                 }
@@ -385,6 +393,7 @@ extension AddVC: UICollectionViewDataSource {
             return cell
         } else if indexPath.item == 1 {
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: cellTitleId, for: indexPath) as! AddTitleCell
+            cell.addVC = self
             cell.cellTitle.delegate = self
             cell.cellTitle.tag = 1
             cell.timeToCook.delegate = self
@@ -419,12 +428,7 @@ extension AddVC: UICollectionViewDataSource {
 //MARK: UITextFieldDelegate
 extension AddVC: UITextFieldDelegate {
     
-    func textFieldDidBeginEditing(_ textField: UITextField) {
-        let indexPath = IndexPath(item: 1, section: 0)
-        collectionView.scrollToItem(at: indexPath, at: .bottom, animated: true)
-    }
-    
-    func textFieldDidEndEditing(_ textField: UITextField) {
+    func textChanged(textField: UITextField) {
         switch textField.tag {
         case 1:
             recipeToSend["title"] = textField.text!
@@ -436,6 +440,12 @@ extension AddVC: UITextFieldDelegate {
             break
         }
     }
+    
+    func textFieldDidBeginEditing(_ textField: UITextField) {
+        let indexPath = IndexPath(item: 1, section: 0)
+        collectionView.scrollToItem(at: indexPath, at: .bottom, animated: true)
+    }
+    
 }
 //MARK: UITextViewDelegate
 extension AddVC: UITextViewDelegate {
@@ -487,13 +497,19 @@ extension AddVC: UICollectionViewDelegateFlowLayout {
         
     }
     
+    override func viewWillLayoutSubviews() {
+        super.viewWillLayoutSubviews()
+        
+        self.collectionView.collectionViewLayout.invalidateLayout()
+    }
+    
 }
 //MARK: UIImagePickerControllerDelegate
 extension AddVC: UIImagePickerControllerDelegate {
     
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any]) {
         
-        if let videoUrl = info[UIImagePickerControllerMediaURL] as? URL {
+        if let _ = info[UIImagePickerControllerMediaURL] as? URL {
             //we selected a video
             //handleVideoSelectedForUrl(url: videoUrl)
             
@@ -521,6 +537,7 @@ extension AddVC: UIImagePickerControllerDelegate {
             let cell = collectionView.cellForItem(at: indexPath) as! AddImageCell
             cell.setImage = selectedImage
             imageRecipe = selectedImage
+            imageIsSet = true
         }
     }
 }
