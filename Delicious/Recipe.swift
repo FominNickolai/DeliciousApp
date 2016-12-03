@@ -23,6 +23,7 @@ class Recipe {
     private var _timestamp: String!
     private var _imageNameInStorage: String!
     var likedPosts: [String] = []
+    var complaineUsers: [String] = []
     
     var title: String {
         return _title
@@ -63,6 +64,7 @@ class Recipe {
     var imageNameInStorage: String {
         return _imageNameInStorage
     }
+    
     
     init(recipeId: String, recipeData: Dictionary<String, AnyObject>) {
         
@@ -110,6 +112,12 @@ class Recipe {
             }
         }
         
+        if let complaineUsersDict = recipeData["complaineUsers"] as? [String:Int] {
+            for (key, _) in complaineUsersDict {
+                self.complaineUsers.append(key)
+            }
+        }
+        
         _recipeRef = DataService.ds.REF_POSTS.child(_recipeId)
     }
     
@@ -133,6 +141,18 @@ class Recipe {
             })
         }
         
+    }
+    
+    func copmlaineToRecipe(completion: @escaping () -> ()) {
+        guard let userId = FIRAuth.auth()?.currentUser?.uid else {
+            return
+        }
+        _recipeRef.child("complaineUsers").updateChildValues([userId: 1], withCompletionBlock: { (error, ref) in
+            if error != nil {
+                return
+            }
+            completion()
+        })
     }
     
 }

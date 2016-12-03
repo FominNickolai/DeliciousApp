@@ -64,6 +64,29 @@ extension UIView {
     }
 }
 
+extension UIView
+{
+    func searchVisualEffectsSubview() -> UIVisualEffectView?
+    {
+        if let visualEffectView = self as? UIVisualEffectView
+        {
+            return visualEffectView
+        }
+        else
+        {
+            for subview in subviews
+            {
+                if let found = subview.searchVisualEffectsSubview()
+                {
+                    return found
+                }
+            }
+        }
+        
+        return nil
+    }
+}
+
 extension UIImageView {
     
     func loadImageUsingCacheWithUrlString(urlString: String, completion: (() -> ())?) {

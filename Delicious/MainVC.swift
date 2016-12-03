@@ -138,11 +138,11 @@ class MainVC: UIViewController {
         let swipeRight = UISwipeGestureRecognizer(target: self, action: #selector(handleMenuButtonPressed))
         swipeRight.direction = UISwipeGestureRecognizerDirection.right
         self.view.addGestureRecognizer(swipeRight)
-        
-        fetchAllRecipes()
-        
+                
         DispatchQueue.global(qos: .userInteractive).asyncAfter(deadline: .now() + .seconds(2)) { [unowned self] in
-            self.fetchUserData()
+            self.fetchUserData(completion: { 
+                self.fetchAllRecipes()
+            })
             
         }
         
@@ -230,9 +230,21 @@ extension MainVC {
                 for snap in snapshot {
                     
                     if let recipeDict = snap.value as? Dictionary<String, AnyObject> {
-                        
+                        guard let userId = FIRAuth.auth()?.currentUser?.uid else {
+                            return
+                        }
+
                         let key = snap.key
                         let recipe = Recipe(recipeId: key, recipeData: recipeDict)
+                        if recipe.complaineUsers.contains(userId) {
+                            continue
+                        }
+                        if recipe.complaineUsers.count > 3 {
+                            continue
+                        }
+                        if let isComplaineUser = self.user?.complanedUsers.contains(recipe.fromId), isComplaineUser == true {
+                            continue
+                        }
                         self.recipes.append(recipe)
                         
                     }
@@ -278,7 +290,7 @@ extension MainVC {
         })
     }
     
-    func fetchUserData() {
+    func fetchUserData(completion: @escaping () -> ()) {
         
         guard let userId = FIRAuth.auth()?.currentUser?.uid else {
             return
@@ -293,12 +305,56 @@ extension MainVC {
             if let userName = dictionary["name"] as? String {
                 user.userName = userName
             }
+            if let complaineUsersDict = dictionary["complanedUsers"] as? [String:Int] {
+                for (key, _) in complaineUsersDict {
+                    user.complanedUsers.append(key)
+                }
+            }
             self.user = user
+            completion()
         })
     }
     
-    func editCell() {
+    func editCell(cell: MainCell) {
+        guard let indexPath = (collectionView.indexPath(for: cell)) else {
+            return
+        }
+        let indexPathRow = indexPath.row
         
+        let alertController = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
+        let cancelAction = UIAlertAction(title: "Cancel", style: .default, handler: nil)
+        let hideSource = UIAlertAction(title: "Hide Source of News", style: .default, handler: { action in
+            let recipe = self.recipes[indexPathRow]
+            recipe.copmlaineToRecipe(completion: {
+                self.user?.addComplainedUser(fromUserId: recipe.fromId, completion: { 
+                    DispatchQueue.main.async { [weak self] in
+                        self?.recipes.remove(at: indexPathRow)
+                        self?.collectionView.deleteItems(at: [indexPath])
+                    }
+                })
+            })
+            print("Hide news source")
+        })
+        let complainRecipe = UIAlertAction(title: "Hide and Complain", style: .default, handler: { action in
+            let recipe = self.recipes[indexPathRow]
+            recipe.copmlaineToRecipe(completion: { 
+                DispatchQueue.main.async { [weak self] in
+                    self?.recipes.remove(at: indexPathRow)
+                    self?.collectionView.deleteItems(at: [indexPath])
+                }
+            })
+        })
+        alertController.addAction(complainRecipe)
+        alertController.addAction(hideSource)
+        alertController.addAction(cancelAction)
+        alertController.view.tintColor = .white
+        
+        present(alertController, animated: true, completion: nil)
+        
+        if let visualEffectView = alertController.view.searchVisualEffectsSubview()
+        {
+            visualEffectView.effect = UIBlurEffect(style: .dark)
+        }
     }
 }
 //MARK: MenuTransitionManagerDelegate
@@ -320,6 +376,7 @@ extension MainVC: UICollectionViewDataSource {
         let recipe = recipes[indexPath.item]
         
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: cellId, for: indexPath) as! MainCell
+        cell.mainVC = self
         cell.recipe = recipe
         return cell
         

@@ -163,7 +163,7 @@ class MainCell: UICollectionViewCell {
     }
     
     func handleEditCell() {
-        mainVC?.editCell()
+        mainVC?.editCell(cell: self)
     }
     
     override func prepareForReuse() {
