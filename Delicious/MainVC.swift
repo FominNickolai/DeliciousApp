@@ -138,7 +138,7 @@ class MainVC: UIViewController {
         let swipeRight = UISwipeGestureRecognizer(target: self, action: #selector(handleMenuButtonPressed))
         swipeRight.direction = UISwipeGestureRecognizerDirection.right
         self.view.addGestureRecognizer(swipeRight)
-                
+        
         DispatchQueue.global(qos: .userInteractive).asyncAfter(deadline: .now() + .seconds(2)) { [unowned self] in
             self.fetchUserData(completion: { 
                 self.fetchAllRecipes()
@@ -347,14 +347,27 @@ extension MainVC {
         alertController.addAction(complainRecipe)
         alertController.addAction(hideSource)
         alertController.addAction(cancelAction)
-        alertController.view.tintColor = .white
         
-        present(alertController, animated: true, completion: nil)
         
-        if let visualEffectView = alertController.view.searchVisualEffectsSubview()
-        {
-            visualEffectView.effect = UIBlurEffect(style: .dark)
+        if ( UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiom.pad ){
+            alertController.view.tintColor = .black
+            if let currentPopoverpresentioncontroller = alertController.popoverPresentationController{
+                currentPopoverpresentioncontroller.sourceView = cell.editRecipeButton
+                currentPopoverpresentioncontroller.sourceRect = cell.buttonBlurView.bounds
+                currentPopoverpresentioncontroller.permittedArrowDirections = UIPopoverArrowDirection.down;
+                self.present(alertController, animated: true, completion: nil)
+            }
+        } else {
+            alertController.view.tintColor = .white
+            present(alertController, animated: true, completion: nil)
+            if let visualEffectView = alertController.view.searchVisualEffectsSubview()
+            {
+                visualEffectView.effect = UIBlurEffect(style: .dark)
+            }
         }
+
+        
+        
     }
 }
 //MARK: MenuTransitionManagerDelegate

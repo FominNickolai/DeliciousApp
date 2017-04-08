@@ -502,7 +502,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = Delicious/Delicious.entitlements;
-				CODE_SIGN_IDENTITY = "iPhone Distribution: Fomin Mykola (X3563PB3YJ)";
+				CODE_SIGN_IDENTITY = "iPhone Developer: giraffe.in.ua@gmail.com (479UAXUXU7)";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				DEVELOPMENT_TEAM = X3563PB3YJ;
 				INFOPLIST_FILE = Delicious/Info.plist;
@@ -520,7 +520,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = Delicious/Delicious.entitlements;
-				CODE_SIGN_IDENTITY = "iPhone Distribution: Fomin Mykola (X3563PB3YJ)";
+				CODE_SIGN_IDENTITY = "iPhone Developer: giraffe.in.ua@gmail.com (479UAXUXU7)";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				DEVELOPMENT_TEAM = X3563PB3YJ;
 				INFOPLIST_FILE = Delicious/Info.plist;
