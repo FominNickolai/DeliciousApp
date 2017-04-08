@@ -95,7 +95,7 @@ class MainVC: UIViewController {
         viewDidAppearProcessed = true
         
         do {
-            try segmentedControl.set(index: UInt(currentFilterItem), animated: true)
+            try segmentedControl.setIndex(UInt(currentFilterItem), animated: true)
         } catch {
         }
     }
@@ -147,7 +147,7 @@ class MainVC: UIViewController {
         }
         
         do {
-            try segmentedControl.set(index: 0, animated: true)
+            try segmentedControl.setIndex( 0, animated: true)
             currentFilterItem = 0
         } catch {
         }

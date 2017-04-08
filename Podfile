@@ -6,7 +6,7 @@ target 'Delicious' do
   use_frameworks!
 
   # Pods for Delicious
-  pod 'BetterSegmentedControl', '~> 0.5'
+  pod 'BetterSegmentedControl', '~> 0.7'
   pod 'Firebase/Core'
   pod 'Firebase/Auth'
   pod 'Firebase/Database'
